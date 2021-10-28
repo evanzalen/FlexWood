@@ -1,0 +1,410 @@
+[2021-10-13 04:46:43,176] multiqc                                            [DEBUG  ]  No MultiQC config found: /mnt/picea/storage/Modules/apps/compilers/python/2.7.8/lib/python2.7/site-packages/multiqc_config.yaml
+[2021-10-13 04:46:43,176] multiqc                                            [DEBUG  ]  No MultiQC config found: /mnt/picea/home/evanzalen/.multiqc_config.yaml
+[2021-10-13 04:46:43,176] multiqc                                            [DEBUG  ]  No MultiQC config found: multiqc_config.yaml
+[2021-10-13 04:46:43,177] multiqc                                            [DEBUG  ]  Command used: /mnt/picea/Modules/apps/compilers/python/2.7.8/bin/multiqc -o /mnt/picea/home/evanzalen/Git/FlexWood/MultiQC /mnt/picea/home/evanzalen/Git/FlexWood
+[2021-10-13 04:46:43,543] multiqc                                            [WARNING]  MultiQC Version v1.11 now available!
+[2021-10-13 04:46:43,543] multiqc                                            [INFO   ]  This is MultiQC v1.7
+[2021-10-13 04:46:43,544] multiqc                                            [DEBUG  ]  Command     : /mnt/picea/Modules/apps/compilers/python/2.7.8/bin/multiqc -o /mnt/picea/home/evanzalen/Git/FlexWood/MultiQC /mnt/picea/home/evanzalen/Git/FlexWood
+[2021-10-13 04:46:43,544] multiqc                                            [DEBUG  ]  Working dir : /mnt/picea/home/evanzalen/Git/FlexWood/pipeline
+[2021-10-13 04:46:43,544] multiqc                                            [INFO   ]  Template    : default
+[2021-10-13 04:46:43,544] multiqc                                            [INFO   ]  Searching '/mnt/picea/home/evanzalen/Git/FlexWood'
+[2021-10-13 04:46:43,546] multiqc                                            [DEBUG  ]  Analysing modules: custom_content, conpair, peddy, methylQA, phantompeakqualtools, qualimap, preseq, quast, qorts, rna_seqc, rsem, rseqc, busco, goleft_indexcov, disambiguate, supernova, deeptools, sargasso, verifybamid, mirtrace, happy, homer, macs2, theta2, snpeff, gatk, htseq, bcftools, featureCounts, dedup, damageprofiler, picard, prokka, samblaster, samtools, bamtools, jellyfish, vcftools, longranger, stacks, bbmap, bismark, biscuit, hicexplorer, hicup, hicpro, salmon, kallisto, slamdunk, star, hisat2, tophat, bowtie2, bowtie1, kat, leehom, adapterRemoval, clipandmerge, cutadapt, flexbar, trimmomatic, skewer, sortmerna, biobloomtools, fastq_screen, afterqc, fastp, fastqc, minionqc, clusterflow, bcl2fastq, interop, flash
+[2021-10-13 04:46:43,546] multiqc                                            [DEBUG  ]  Using temporary directory for creating report: /tmp/tmpfEs2RB
+[2021-10-13 04:47:11,492] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: expressionSpecificityUtility.html
+[2021-10-13 04:47:11,702] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: featureSelection.html
+[2021-10-13 04:47:11,812] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: genericRnaSeq.html
+[2021-10-13 04:47:11,932] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: gff3Utilities.html
+[2021-10-13 04:47:12,700] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: pasaUtilities.html
+[2021-10-13 04:47:13,523] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: salmonPEplusSE.html
+[2021-10-13 04:47:13,612] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: sequenceUtilities.html
+[2021-10-13 04:47:16,124] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_2.fq.gz
+[2021-10-13 04:47:16,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_1.fq.gz
+[2021-10-13 04:47:16,126] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_2.fq.gz
+[2021-10-13 04:47:16,126] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_1.fq.gz
+[2021-10-13 04:47:16,126] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_2.fq.gz
+[2021-10-13 04:47:16,126] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_2.fq.gz
+[2021-10-13 04:47:16,126] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_2.fq.gz
+[2021-10-13 04:47:16,126] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_1.fq.gz
+[2021-10-13 04:47:16,127] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_2.fq.gz
+[2021-10-13 04:47:16,128] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_1.fq.gz
+[2021-10-13 04:47:16,128] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_1.fq.gz
+[2021-10-13 04:47:16,128] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_1.fq.gz
+[2021-10-13 04:47:16,128] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_1.fq.gz
+[2021-10-13 04:47:16,128] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_1.fq.gz
+[2021-10-13 04:47:16,128] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_1.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_1.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_1.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_2.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_2.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_2.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_2.fq.gz
+[2021-10-13 04:47:16,129] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_2.fq.gz
+[2021-10-13 04:47:16,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_2.fq.gz
+[2021-10-13 04:47:16,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_2.fq.gz
+[2021-10-13 04:47:16,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_1.fq.gz
+[2021-10-13 04:47:16,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_1.fq.gz
+[2021-10-13 04:47:16,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_2.fq.gz
+[2021-10-13 04:47:16,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_1.fq.gz
+[2021-10-13 04:47:20,173] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_2_fastqc.html
+[2021-10-13 04:47:20,173] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_2_fastqc.html
+[2021-10-13 04:47:20,190] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_1_fastqc.html
+[2021-10-13 04:47:20,190] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_1_fastqc.html
+[2021-10-13 04:47:20,190] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_2_fastqc.html
+[2021-10-13 04:47:20,190] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_1_fastqc.html
+[2021-10-13 04:47:20,190] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_2_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_1_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_2_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_1_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_1_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_2_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_2_fastqc.html
+[2021-10-13 04:47:20,191] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_2_fastqc.html
+[2021-10-13 04:47:20,192] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_1_fastqc.html
+[2021-10-13 04:47:20,192] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_2_fastqc.html
+[2021-10-13 04:47:20,195] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_1_fastqc.html
+[2021-10-13 04:47:20,198] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_1_fastqc.html
+[2021-10-13 04:47:20,198] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_2_fastqc.html
+[2021-10-13 04:47:20,198] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_1_fastqc.html
+[2021-10-13 04:47:20,198] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_2_fastqc.html
+[2021-10-13 04:47:20,198] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_2_fastqc.html
+[2021-10-13 04:47:20,200] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_1_fastqc.html
+[2021-10-13 04:47:20,201] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_1_fastqc.html
+[2021-10-13 04:47:20,203] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_1_fastqc.html
+[2021-10-13 04:47:20,205] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_1_fastqc.html
+[2021-10-13 04:47:20,206] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_2_fastqc.html
+[2021-10-13 04:47:20,210] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_1_fastqc.html
+[2021-10-13 04:47:20,211] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_2_fastqc.html
+[2021-10-13 04:47:20,212] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_2_fastqc.html
+[2021-10-13 04:47:20,212] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_1_fastqc.html
+[2021-10-13 04:47:20,212] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_2_fastqc.html
+[2021-10-13 04:47:20,213] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_2_fastqc.html
+[2021-10-13 04:47:20,217] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_1_fastqc.html
+[2021-10-13 04:47:20,218] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_1_fastqc.html
+[2021-10-13 04:47:20,218] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_2_fastqc.html
+[2021-10-13 04:47:20,218] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_2_fastqc.html
+[2021-10-13 04:47:20,220] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_1_fastqc.html
+[2021-10-13 04:47:20,222] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_1_fastqc.html
+[2021-10-13 04:47:20,222] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_2_fastqc.html
+[2021-10-13 04:47:20,637] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_1_fastqc.html
+[2021-10-13 04:47:20,638] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_2_fastqc.html
+[2021-10-13 04:47:20,640] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_2_fastqc.html
+[2021-10-13 04:47:20,640] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_1_fastqc.html
+[2021-10-13 04:47:20,857] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_2_fastqc.html
+[2021-10-13 04:47:20,858] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_1_fastqc.html
+[2021-10-13 04:47:21,297] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_1_fastqc.html
+[2021-10-13 04:47:21,297] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_2_fastqc.html
+[2021-10-13 04:47:21,299] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_1_fastqc.html
+[2021-10-13 04:47:21,300] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_2_fastqc.html
+[2021-10-13 04:47:21,497] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_1_fastqc.html
+[2021-10-13 04:47:21,499] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_2_fastqc.html
+[2021-10-13 04:47:21,912] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_1_fastqc.html
+[2021-10-13 04:47:21,912] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_2_fastqc.html
+[2021-10-13 04:47:21,915] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_2_fastqc.html
+[2021-10-13 04:47:21,915] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_1_fastqc.html
+[2021-10-13 04:47:22,307] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_2_fastqc.html
+[2021-10-13 04:47:22,309] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_1_fastqc.html
+[2021-10-13 04:47:22,311] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_1_fastqc.html
+[2021-10-13 04:47:22,312] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_2_fastqc.html
+[2021-10-13 04:47:22,710] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_1_fastqc.html
+[2021-10-13 04:47:22,722] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_1_fastqc.html
+[2021-10-13 04:47:22,722] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_2_fastqc.html
+[2021-10-13 04:47:22,723] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_2_fastqc.html
+[2021-10-13 04:47:23,164] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_1_fastqc.html
+[2021-10-13 04:47:23,164] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_2_fastqc.html
+[2021-10-13 04:47:23,167] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_2_fastqc.html
+[2021-10-13 04:47:23,167] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_1_fastqc.html
+[2021-10-13 04:47:23,336] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_1_fastqc.html
+[2021-10-13 04:47:23,338] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_2_fastqc.html
+[2021-10-13 04:47:23,724] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_1_fastqc.html
+[2021-10-13 04:47:23,726] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_2_fastqc.html
+[2021-10-13 04:47:23,728] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_2_fastqc.html
+[2021-10-13 04:47:23,728] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_1_fastqc.html
+[2021-10-13 04:47:23,925] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_1_fastqc.html
+[2021-10-13 04:47:23,929] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_2_fastqc.html
+[2021-10-13 04:47:24,359] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_1_fastqc.html
+[2021-10-13 04:47:24,359] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_2_fastqc.html
+[2021-10-13 04:47:24,362] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_2_fastqc.html
+[2021-10-13 04:47:24,362] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_1_fastqc.html
+[2021-10-13 04:47:24,585] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:24,589] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:24,784] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:24,786] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:25,188] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:25,192] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:25,193] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:25,195] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:25,844] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:25,844] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:25,848] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:25,848] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:26,182] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:26,388] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:26,595] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:26,596] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:26,597] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:26,598] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:27,041] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:27,268] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:27,270] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:27,271] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:27,480] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:27,481] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:27,482] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:27,483] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:27,874] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:27,878] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:27,880] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:27,880] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:28,123] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:28,125] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:28,554] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:28,554] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:28,556] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:28,557] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:28,983] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:28,985] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:28,986] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_trimmomatic_1_fastqc.html
+[2021-10-13 04:47:28,987] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_trimmomatic_2_fastqc.html
+[2021-10-13 04:47:29,712] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_1.fq.gz
+[2021-10-13 04:47:29,712] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:29,712] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:29,851] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_1.fq.gz
+[2021-10-13 04:47:29,851] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_2.fq.gz
+[2021-10-13 04:47:29,982] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_1.fq.gz
+[2021-10-13 04:47:29,983] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_2.fq.gz
+[2021-10-13 04:47:29,983] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_2.fq.gz
+[2021-10-13 04:47:29,983] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:29,983] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_2.fq.gz
+[2021-10-13 04:47:30,130] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_1.fq.gz
+[2021-10-13 04:47:30,131] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_2.fq.gz
+[2021-10-13 04:47:30,131] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:30,131] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:30,131] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:30,239] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_2.fq.gz
+[2021-10-13 04:47:30,295] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_1.fq.gz
+[2021-10-13 04:47:30,295] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_1.fq.gz
+[2021-10-13 04:47:30,296] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_2.fq.gz
+[2021-10-13 04:47:30,434] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_1.fq.gz
+[2021-10-13 04:47:30,434] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_2.fq.gz
+[2021-10-13 04:47:30,609] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:30,667] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_1.fq.gz
+[2021-10-13 04:47:30,667] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_2.fq.gz
+[2021-10-13 04:47:30,776] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:30,882] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:30,988] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:31,205] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,411] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,411] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_2.fq.gz
+[2021-10-13 04:47:31,468] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:31,565] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:31,687] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,688] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_2.fq.gz
+[2021-10-13 04:47:31,688] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,688] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_2.fq.gz
+[2021-10-13 04:47:31,688] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:31,833] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_2.fq.gz
+[2021-10-13 04:47:31,833] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,897] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,897] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_2.fq.gz
+[2021-10-13 04:47:31,954] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_1.fq.gz
+[2021-10-13 04:47:31,954] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_2.fq.gz
+[2021-10-13 04:47:31,954] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,084] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_2.fq.gz
+[2021-10-13 04:47:32,084] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_1.fq.gz
+[2021-10-13 04:47:32,140] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_1.fq.gz
+[2021-10-13 04:47:32,140] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_2.fq.gz
+[2021-10-13 04:47:32,253] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,323] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_1.fq.gz
+[2021-10-13 04:47:32,323] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_2.fq.gz
+[2021-10-13 04:47:32,323] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,323] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,323] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,390] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_1.fq.gz
+[2021-10-13 04:47:32,390] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_2.fq.gz
+[2021-10-13 04:47:32,452] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_1.fq.gz
+[2021-10-13 04:47:32,453] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_2.fq.gz
+[2021-10-13 04:47:32,453] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,453] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_rRNA.fastq.gz
+[2021-10-13 04:47:32,540] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:32,540] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:32,540] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:32,540] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:32,540] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:32,541] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:32,541] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:32,541] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT18_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:32,713] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:32,749] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:32,749] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:32,749] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:32,750] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT17_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:32,837] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,056] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,056] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,142] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,142] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,142] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,142] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT7_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,142] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,143] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,143] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,143] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA5_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,327] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,327] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,327] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,327] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,328] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,328] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA12_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,413] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,414] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT8_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,414] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,414] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,414] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,414] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,414] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,415] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT20_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,672] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,672] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,672] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,672] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA15_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,844] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT10_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,845] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,845] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA13_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,846] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT9_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,932] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA4_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,932] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA2_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,932] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,933] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA1_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,933] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,933] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,933] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,933] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA11_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:33,933] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:33,934] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:33,934] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:33,934] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT19_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:34,075] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:34,075] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:34,075] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:34,076] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_ROT6_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:34,076] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:34,076] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:34,076] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:34,076] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_ROT16_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:34,236] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:34,236] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:34,236] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:34,236] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: P_STA14_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:34,236] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_trimmomatic_1.fq.gz
+[2021-10-13 04:47:34,236] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_unpaired_1.fq.gz
+[2021-10-13 04:47:34,237] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_trimmomatic_2.fq.gz
+[2021-10-13 04:47:34,237] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: X_STA3_sortmerna_unpaired_2.fq.gz
+[2021-10-13 04:47:36,403] multiqc                                            [DEBUG  ]  No samples found: custom_content
+[2021-10-13 04:47:36,445] multiqc                                            [DEBUG  ]  No samples found: conpair
+[2021-10-13 04:47:36,502] multiqc                                            [DEBUG  ]  No samples found: peddy
+[2021-10-13 04:47:36,533] multiqc                                            [DEBUG  ]  No samples found: methylQA
+[2021-10-13 04:47:36,576] multiqc                                            [DEBUG  ]  No samples found: phantompeakqualtools
+[2021-10-13 04:47:36,628] multiqc                                            [DEBUG  ]  No samples found: qualimap
+[2021-10-13 04:47:36,659] multiqc                                            [DEBUG  ]  No samples found: preseq
+[2021-10-13 04:47:36,692] multiqc                                            [DEBUG  ]  No samples found: quast
+[2021-10-13 04:47:36,752] multiqc                                            [DEBUG  ]  No samples found: qorts
+[2021-10-13 04:47:36,804] multiqc                                            [DEBUG  ]  No samples found: rna_seqc
+[2021-10-13 04:47:36,865] multiqc                                            [DEBUG  ]  No samples found: rsem
+[2021-10-13 04:47:36,964] multiqc                                            [DEBUG  ]  No samples found: rseqc
+[2021-10-13 04:47:36,993] multiqc                                            [DEBUG  ]  No samples found: busco
+[2021-10-13 04:47:37,045] multiqc                                            [DEBUG  ]  No samples found: goleft_indexcov
+[2021-10-13 04:47:37,072] multiqc                                            [DEBUG  ]  No samples found: disambiguate
+[2021-10-13 04:47:37,126] multiqc                                            [DEBUG  ]  No samples found: supernova
+[2021-10-13 04:47:37,253] multiqc                                            [DEBUG  ]  No samples found: deeptools
+[2021-10-13 04:47:37,286] multiqc                                            [DEBUG  ]  No samples found: sargasso
+[2021-10-13 04:47:37,347] multiqc                                            [DEBUG  ]  No samples found: verifybamid
+[2021-10-13 04:47:37,407] multiqc                                            [DEBUG  ]  No samples found: mirtrace
+[2021-10-13 04:47:37,456] multiqc                                            [DEBUG  ]  No samples found: happy
+[2021-10-13 04:47:37,521] multiqc                                            [DEBUG  ]  No samples found: homer
+[2021-10-13 04:47:37,585] multiqc                                            [DEBUG  ]  No samples found: macs2
+[2021-10-13 04:47:37,618] multiqc                                            [DEBUG  ]  No samples found: theta2
+[2021-10-13 04:47:37,659] multiqc                                            [DEBUG  ]  No samples found: snpeff
+[2021-10-13 04:47:37,731] multiqc                                            [DEBUG  ]  No samples found: gatk
+[2021-10-13 04:47:37,790] multiqc                                            [DEBUG  ]  No samples found: htseq
+[2021-10-13 04:47:37,842] multiqc                                            [DEBUG  ]  No samples found: bcftools
+[2021-10-13 04:47:37,874] multiqc                                            [DEBUG  ]  No samples found: featureCounts
+[2021-10-13 04:47:37,912] multiqc                                            [DEBUG  ]  No samples found: dedup
+[2021-10-13 04:47:37,969] multiqc                                            [DEBUG  ]  No samples found: damageprofiler
+[2021-10-13 04:47:38,150] multiqc                                            [DEBUG  ]  No samples found: picard
+[2021-10-13 04:47:38,194] multiqc                                            [DEBUG  ]  No samples found: prokka
+[2021-10-13 04:47:38,249] multiqc                                            [DEBUG  ]  No samples found: samblaster
+[2021-10-13 04:47:38,308] multiqc                                            [DEBUG  ]  No samples found: samtools
+[2021-10-13 04:47:38,361] multiqc                                            [DEBUG  ]  No samples found: bamtools
+[2021-10-13 04:47:38,415] multiqc                                            [DEBUG  ]  No samples found: jellyfish
+[2021-10-13 04:47:38,466] multiqc                                            [DEBUG  ]  No samples found: vcftools
+[2021-10-13 04:47:38,510] multiqc                                            [DEBUG  ]  No samples found: longranger
+[2021-10-13 04:47:38,571] multiqc                                            [DEBUG  ]  No samples found: stacks
+[2021-10-13 04:47:38,690] multiqc                                            [DEBUG  ]  No samples found: bbmap
+[2021-10-13 04:47:38,738] multiqc                                            [DEBUG  ]  No samples found: bismark
+[2021-10-13 04:47:38,809] multiqc                                            [DEBUG  ]  No samples found: biscuit
+[2021-10-13 04:47:38,848] multiqc                                            [DEBUG  ]  No samples found: hicexplorer
+[2021-10-13 04:47:38,882] multiqc                                            [DEBUG  ]  No samples found: hicup
+[2021-10-13 04:47:38,921] multiqc                                            [DEBUG  ]  No samples found: hicpro
+[2021-10-13 04:47:39,022] multiqc                                            [DEBUG  ]  No samples found: salmon
+[2021-10-13 04:47:39,072] multiqc                                            [DEBUG  ]  No samples found: kallisto
+[2021-10-13 04:47:39,154] multiqc                                            [DEBUG  ]  No samples found: slamdunk
+[2021-10-13 04:47:39,205] multiqc                                            [DEBUG  ]  No samples found: star
+[2021-10-13 04:47:39,242] multiqc                                            [DEBUG  ]  No samples found: hisat2
+[2021-10-13 04:47:39,274] multiqc                                            [DEBUG  ]  No samples found: tophat
+[2021-10-13 04:47:39,309] multiqc                                            [DEBUG  ]  No samples found: bowtie2
+[2021-10-13 04:47:39,353] multiqc                                            [DEBUG  ]  No samples found: bowtie1
+[2021-10-13 04:47:39,392] multiqc                                            [DEBUG  ]  No samples found: kat
+[2021-10-13 04:47:39,436] multiqc                                            [DEBUG  ]  No samples found: leehom
+[2021-10-13 04:47:39,491] multiqc                                            [DEBUG  ]  No samples found: adapterRemoval
+[2021-10-13 04:47:39,520] multiqc                                            [DEBUG  ]  No samples found: clipandmerge
+[2021-10-13 04:47:39,575] multiqc                                            [DEBUG  ]  No samples found: cutadapt
+[2021-10-13 04:47:39,617] multiqc                                            [DEBUG  ]  No samples found: flexbar
+[2021-10-13 04:47:39,761] multiqc.modules.trimmomatic.trimmomatic            [INFO   ]  Found 20 logs
+[2021-10-13 04:47:39,813] multiqc                                            [DEBUG  ]  No samples found: skewer
+[2021-10-13 04:47:39,926] multiqc.modules.sortmerna.sortmerna                [INFO   ]  Found 20 logs
+[2021-10-13 04:47:39,984] multiqc                                            [DEBUG  ]  No samples found: biobloomtools
+[2021-10-13 04:47:40,022] multiqc                                            [DEBUG  ]  No samples found: fastq_screen
+[2021-10-13 04:47:40,056] multiqc                                            [DEBUG  ]  No samples found: afterqc
+[2021-10-13 04:47:40,118] multiqc                                            [DEBUG  ]  No samples found: fastp
+[2021-10-13 04:47:45,403] multiqc.modules.fastqc.fastqc                      [INFO   ]  Found 120 reports
+[2021-10-13 04:48:17,944] multiqc                                            [DEBUG  ]  No samples found: minionqc
+[2021-10-13 04:48:17,980] multiqc                                            [DEBUG  ]  No samples found: clusterflow
+[2021-10-13 04:48:18,033] multiqc                                            [DEBUG  ]  No samples found: bcl2fastq
+[2021-10-13 04:48:18,093] multiqc                                            [DEBUG  ]  No samples found: interop
+[2021-10-13 04:48:18,119] multiqc                                            [DEBUG  ]  No samples found: flash
+[2021-10-13 04:48:18,509] multiqc                                            [INFO   ]  Compressing plot data
+[2021-10-13 04:48:20,761] multiqc                                            [INFO   ]  Report      : ../MultiQC/multiqc_report.html
+[2021-10-13 04:48:20,761] multiqc                                            [INFO   ]  Data        : ../MultiQC/multiqc_data
+[2021-10-13 04:48:20,762] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/multiqc_sortmerna.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,762] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/multiqc_sources.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,763] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_sequence_duplication_levels_plot_1.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,763] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/multiqc_trimmomatic.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,764] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_per_base_sequence_quality_plot_1.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,764] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_per_base_n_content_plot_1.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,764] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_per_sequence_gc_content_plot_Counts.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,765] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_per_sequence_quality_scores_plot_1.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,765] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_sequence_counts_plot_1.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,766] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_sequence_length_distribution_plot_1.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,766] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/mqc_fastqc_per_sequence_gc_content_plot_Percentages.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,766] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/multiqc_data.json' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,769] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/multiqc_fastqc.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:20,769] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpfEs2RB/multiqc_data/multiqc_general_stats.txt' to '/mnt/picea/home/evanzalen/Git/FlexWood/MultiQC/multiqc_data'
+[2021-10-13 04:48:21,456] multiqc                                            [INFO   ]  MultiQC complete
