@@ -14,6 +14,7 @@
 suppressPackageStartupMessages({
     library(data.table)
     library(DESeq2)
+    library(dplyr)
     library(gplots)
     library(here)
     library(hyperSpec)
@@ -21,6 +22,9 @@ suppressPackageStartupMessages({
     library(tidyverse)
     library(VennDiagram)
 })
+
+
+dfnew <- df[,1:604]
 
 #' * Helper files
 suppressMessages({
@@ -42,11 +46,11 @@ mar <- par("mar")
 #' 1. plot specific gene expression
 #' ```{r edit1, echo=FALSE,eval=FALSE}
 #' CHANGEME - here you need to change the variables in the 
-#' plot to display the expression values accross your samples
+#' plot to display the expression values across your samples
 #' The example below has 2 variables MGenotype and MDay. These 
 #' need replacing by the variable(s) of interest in your project
 #' ```
-"line_plot" <- function(dds=dds,vst=vst,gene_id=gene_id){
+"line_plot" <- function(dds = dds, vst = vst, gene_id = gene_id){
     message(paste("Plotting",gene_id))
     sel <- grepl(gene_id,rownames(vst))
     stopifnot(sum(sel)==1)
@@ -112,7 +116,7 @@ mar <- par("mar")
         max.theta <- metadata(res)$filterNumRej[which.max(metadata(res)$filterNumRej$numRej),"theta"]
         message(sprintf("The independent filtering maximises for %s %% of the data, corresponding to a base mean expression of %s (library-size normalised read)",
                         round(max.theta*100,digits=5),
-                        round(quantile(counts(dds,normalized=TRUE),probs=max.theta),digits=5)))
+                        round(quantile(counts(dds, normalized = TRUE), probs = max.theta), digits = 5)))
     }
     
     if(plot){
@@ -270,13 +274,14 @@ extractEnrichmentResults <- function(enrichment,task="go",
 load(here("data/analysis/salmon/dds.rda"))
 
 #' ## Normalisation for visualisation
-vsd <- varianceStabilizingTransformation(dds,blind=FALSE)
+vsd <- varianceStabilizingTransformation(dds, blind = FALSE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
-dir.create(here("data/analysis/DE"),showWarnings=FALSE)
-save(vst,file=here("data/analysis/DE/vst-aware.rda"))
+dir.create(here("data/analysis/DE"), showWarnings = FALSE)
+save(vst, file = here("data/analysis/DE/vst-aware.rda"))
 write_delim(as.data.frame(vst) %>% rownames_to_column("ID"),
             here("data/analysis/DE/vst-aware.tsv"))
+
 
 #' ## Gene of interests
 #' ```{r goi, echo=FALSE,eval=FALSE}
@@ -286,9 +291,9 @@ write_delim(as.data.frame(vst) %>% rownames_to_column("ID"),
 #' Note that for the plot to work, you also need to edit the first function (`line_plot`)
 #' at the top of this file
 #' ```
-goi <- read_lines(here("doc/goi.txt"))
-stopifnot(all(goi %in% rownames(vst)))
-dev.null <- lapply(goi,line_plot,dds=dds,vst=vst)
+#goi <- read_lines(here("doc/goi.txt"))
+#stopifnot(all(goi %in% rownames(vst)))
+#dev.null <- lapply(goi,line_plot,dds=dds,vst=vst)
 
 #' ## Differential Expression
 dds <- DESeq(dds)
@@ -322,44 +327,237 @@ resultsNames(dds)
 #' ```
 
 #' ```{r contrast, echo=FALSE,eval=FALSE}
-#'contrast1 <- extract_results(dds=dds,vst=vst,contrast="CHANGEME")
+contrast1L <- extract_results(dds = dds, vst = vst, contrast = "BioID_T89_ROT_vs_T89_STA")
+contrast2L <- extract_results(dds = dds, vst = vst, contrast = "Lignin_no_vs_yes")
 #' ```
 
+#' ```
+#' The tissue type still has a too big effect on the DESeq to distinguish what exactly are the DE genes when only focusing on ROT and STA.
+#' Therefore we rerun the dds on the tissue specific data separately to take away the effect the tissue type has.
+#' ```
+ddsp <- dds[, dds$Tissue == "Phloem"]
+ddsx <- dds[, dds$Tissue == "Xylem"]
+
+vsdp <- varianceStabilizingTransformation(ddsp, blind = FALSE)
+vstp <- assay(vsdp)
+vstp <- vstp - min(vstp)
+vsdx <- varianceStabilizingTransformation(ddsx, blind = FALSE)
+vstx <- assay(vsdx)
+vstx <- vstx - min(vstx)
+
+
+#' ## Differential Expression
+ddsp <- DESeq(ddsp)
+ddsx <- DESeq(ddsx)
+
+#' * Dispersion estimation
+#' The dispersion estimation is adequate
+plotDispEsts(ddsp)
+plotDispEsts(ddsx)
+
+#' Check the different contrasts
+resultsNames(ddsp)
+resultsNames(ddsx)
+
+contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA")
+contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA")
+
+contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "Lignin_no_vs_yes")
+contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "Lignin_no_vs_yes")
+
 #' ### Venn Diagram
-#' ```{r venn, echo=FALSE,eval=FALSE}
+#' ```{r venn, echo = FALSE, eval = FALSE}
 #' CHANGEME - Here, you typically would have run several contrasts and you want
 #' to assess their overlap plotting VennDiagrams.
 #' 
-#' In the examples below, we assume that these resutls have been saved in a list
+#' In the examples below, we assume that these results have been saved in a list
 #' called `res.list`
 #' ```
+res.list <- list(c(contrast1p, contrast1x))
 
-#' #### All DE genes
 #' ```{r venn2, echo=FALSE,eval=FALSE}
-#'grid.newpage()
-#'grid.draw(venn.diagram(lapply(res.list,"[[","all"),
-#'                       NULL,
-#'                       fill=pal[1:3]))
+grid.newpage()
+grid.draw(draw.pairwise.venn(area1 = length(contrast1pL$all), area2 = length(contrast2pL$all),
+                             cross.area = length(intersect(contrast1pL$all, contrast2pL$all)), category = c("BioID", "Lignin"),
+                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(45, 225), euler.d = TRUE, sep.dist = 0.09,
+                             rotation.degree = 45, filename = NULL
+))
+
+grid.newpage()
+grid.draw(draw.pairwise.venn(area1 = length(contrast1xL$all), area2 = length(contrast2xL$all),
+                             cross.area = length(intersect(contrast2pL$all, contrast2xL$all)), category = c("BioID", "Lignin"),
+                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(45, 225), euler.d = TRUE, sep.dist = 0.09,
+                             rotation.degree = 45, filename = NULL
+))
 #' ```
 
-#' #### DE genes (up in mutant)
-#' ```{r venn3, echo=FALSE,eval=FALSE}
-#'grid.newpage()
-#'grid.draw(venn.diagram(lapply(res.list,"[[","up"),
-#'                       NULL,
-#'                       fill=pal[1:3]))
+#' ## Analysis in aspect of a Network
 #' ```
+#' Now we load in the Aspwood network to see where our DE genes are located and what genes are connected to them.
+#' 
+#' 
+#' ```
+aspwood_file <- "ftp://anonymous@plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/Expression/Network/network_seidr.txt"
+aspwood <- read_tsv(aspwood_file,
+              col_names = c("dataset", "Source", "Target", "direction", "x1", "x2", "irp"),
+               col_types = NULL, show_col_types = FALSE)
+as.factor(aspwood$dataset)
 
-#' #### DE genes (up in control)
-#' ```{r venn4, echo=FALSE,eval=FALSE}
-#'grid.newpage()
-#'grid.draw(venn.diagram(lapply(res.list,"[[","dn"),
-#'                       NULL,
-#'                       fill=pal[1:3]))
-#' ```
+#' Lets look at the genes of interest (GOI) a little closer.
+commonDE_P <- intersect(contrast1pL$all, contrast2pL$all)
+commonDE_X <- intersect(contrast1xL$all, contrast2xL$all)
+
+PuniqueBID <- setdiff(contrast1pL$all, commonDE_P) # Unique Phloem genes for BioID
+XuniqueBID <- setdiff(contrast1xL$all, commonDE_X) # Unique Xylem genes for BioID
+PuniqueLig <- setdiff(contrast2pL$all, commonDE_P) # Unique Phloem genes for Lignin
+XuniqueLig <- setdiff(contrast2xL$all, commonDE_X) # Unique Xylem genes for Lignin
+
+vst_comP <- vstp[rownames(vstp) %in% commonDE_P,]
+vst_comX <- vstx[rownames(vstx) %in% commonDE_X,]
+
+vst_PBID <- vstp[rownames(vstp) %in% PuniqueBID,]
+vst_PLig <- vstp[rownames(vstp) %in% PuniqueLig,]
+vst_XBID <- vstx[rownames(vstx) %in% XuniqueBID,]
+vst_XLig <- vstx[rownames(vstx) %in% XuniqueLig,]
+
+condsP <- factor(paste(ddsp$BioID, ddsp$Lignin))
+condsX <- factor(paste(ddsx$BioID, ddsx$Lignin))
+
+selsp <- rangeFeatureSelect(counts = vstp[rownames(vstp) %in% PuniqueBID,],
+                           conditions = condsP,
+                           nrep = 5)
+selspL <- rangeFeatureSelect(counts = vstp[rownames(vstp) %in% PuniqueLig,],
+                            conditions = condsP,
+                            nrep = 5)
+
+selsx <- rangeFeatureSelect(counts = vstx[rownames(vstx) %in% XuniqueBID,],
+                            conditions = condsX,
+                            nrep = 5)
+selsxL <- rangeFeatureSelect(counts = vstx[rownames(vstx) %in% XuniqueLig,],
+                            conditions = condsX,
+                            nrep = 5)
+
+vst.cutoff <- 2
+
+par(mar=c(7, 4, 4, 2)+0.1)
+hm_PBID <- heatmap.2(t(scale(t(vst_PBID[selsp[[vst.cutoff + 1]], ]))),
+                 distfun = pearson.dist,
+                 hclustfun = function(X){hclust(X, method = "ward.D2")},
+                 labRow = NA, trace = "none",
+                 labCol = condsP,
+                 margins = c(12, 8),
+                 srtCol = 45,
+                 col = hpal)
+hmPLig <- heatmap.2(t(scale(t(vst_PLig[selspL[[vst.cutoff + 1]], ]))),
+                distfun = pearson.dist,
+                hclustfun = function(X){hclust(X, method = "ward.D2")},
+                labRow = NA, trace = "none",
+                labCol = condsP,
+                margins = c(12, 8),
+                srtCol = 45,
+                col = hpal)
+
+hmXBID <- heatmap.2(t(scale(t(vst_XBID[selsx[[vst.cutoff + 1]], ]))),
+                 distfun = pearson.dist,
+                 hclustfun = function(X){hclust(X, method = "ward.D2")},
+                 labRow = NA, trace = "none",
+                 labCol = condsX,
+                 margins = c(12, 8),
+                 srtCol = 45,
+                 col = hpal)
+hmXLig <- heatmap.2(t(scale(t(vst_XLig[selsxL[[vst.cutoff + 1]], ]))),
+                    distfun = pearson.dist,
+                    hclustfun = function(X){hclust(X, method = "ward.D2")},
+                    labRow = NA, trace = "none",
+                    labCol = condsX,
+                    margins = c(12, 8),
+                    srtCol = 45,
+                    col = hpal)
+
+#' Are the genes within the Aspwood network?
+GOI <- commonDE %in% aspwood$gene
+
+table(PuniqueBID %in% bg)
+table(PuniqueLig %in% bg)
+table(XuniqueBID %in% bg)
+table(XuniqueLig %in% bg)
+
+#' TODO
+#' - get FDN of 32 genes - need edgelist for this
+#' - create heatmap of common and 2 unique genesets
+#' - enrich the genes  
+
+#' ## Enriching the genes
+#' Setting up Gofer
+source("~/Git/UPSCb-common/src/R/gopher.R")
+suppressPackageStartupMessages(library(jsonlite))
+bg <- rownames(vst)
+
+#' Running the enrichments
+enr_commonDE_P <- gopher(commonDE_P,
+                       task = list("go", "kegg", "pfam"),
+                       background = bg, url = "potra2")
+enr_commonDE_FDN <- gopher(commonDE_FDN,
+                       task = list("go", "kegg", "pfam"),
+                       background = bg, url = "potra2")
+
+enr_PuniqueBID <- gopher(PuniqueBID,
+                    task = list("go"),
+                    background = bg, url = "potra2")
+enr_PuniqueLig <- gopher(PuniqueLig,
+                     task = list("go"),
+                     background = bg, url = "potra2")
+write.csv(enr_PuniqueBID[["go"]], here("data/analysis/DE/GO_DE_phloem_BioID.csv"))
+write.csv(enr_PuniqueLig[["go"]], here("data/analysis/DE/GO_DE_phloem_Lignin.csv"))
+
+enr_XuniqueBID <- gopher(XuniqueBID,
+                     task = list("go"),
+                     background = bg, url = "potra2")
+enr_XuniqueLig <- gopher(XuniqueLig,
+                     task = list("go"),
+                     background = bg, url = "potra2")
+write.csv(enr_XuniqueBID[["go"]], here("data/analysis/DE/GO_DE_xylem_BioID.csv"))
+write.csv(enr_XuniqueLig[["go"]], here("data/analysis/DE/GO_DE_xylem_Lignin.csv"))
+
+#' Getting the annotation for the DE genes itself.
+PotraV2Annotation_file <- "ftp://plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/annotation/blast2go/Potra22_blast2go_GO_export.txt"
+Potra_blast2go <- read_tsv(PotraV2Annotation_file, 
+                    col_names = TRUE,
+                    col_types = NULL, show_col_types = FALSE)[, c("Sequence Name", "Annotation GO Count", "Annotation GO ID", "Annotation GO Term", "Annotation GO Category")]
+Potra_blast2go$`Sequence Name` <- gsub("\\.\\d+", " ", Potra_blast2go$`Sequence Name`)
+AnnotPBID <- XuniqueBID %in% Potra_blast2go$`Sequence Name`
+
+#' # First Degree Neighbours of Genes of Interest
+#' Returns a dataframe of 1st degree neighbours
+#' from an edge list and a collection of genes.
+#' It assumes an undirected network.
+#'
+#' @param edgeList data frame with at least 2 columns
+#' 1 with source genes and 1 with target genes. the order
+#' is not important
+#' @param genes a vector of the genes of interest to look for
+#'
+#' @return data frame with 2 columns, FDN (first degree neighbours)
+#' and GOI (gene of interest)
+#'
+#' @examples t <- getFDN(edgeList, "MA_104203g0010")
+#' write.table(t, file="myFile.tsv", sep='\t', row.names = F, quote = F)
+getFDN <- function(edgelist, genes)
+{
+  
+  res <- lapply(genes, function(gene){
+    s2t <- edgelist[edgelist[1] == gene,][2]
+    t2s <- edgelist[edgelist[2] == gene,][1]
+    union(s2t,t2s)
+  })
+  names(res) <- genes
+  res <- setNames(unlist(res, use.names=F),rep(names(res), lengths(res)))
+  myRes <- data.frame(FDN = res, GOI = names(res))
+}
+
 
 #' ### Gene Ontology enrichment
-#' ```{r go, echo=FALSE,eval=FALSE}
+#' ```{r go, echo=FALSE, eval=FALSE}
 #' Once you have obtained a list of candidate genes, you most probably want
 #' to annotate them.
 #' 
@@ -383,9 +581,9 @@ resultsNames(dds)
 #' Make sure to change the `url` to match your species
 #' 
 #' ```
-background <- rownames(vst)[featureSelect(vst,dds$MGenotype,exp=CHANGEME)]
+background <- rownames(vst)[featureSelect(vst, dds$BioID, exp = CHANGEME)]
 
-enr.list <- lapply(res.list,function(r){
+enr.list <- lapply(res.list, function(r){
     lapply(r,gopher,background=background,task="go",url="athaliana")
 })
 

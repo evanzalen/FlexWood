@@ -45,6 +45,7 @@ samples <- read_csv(here("doc/Samples.csv"),
                       col_types=cols(
                         col_character(),
                         col_factor(),
+                        col_factor(),
                         col_factor()
                       ))
 
@@ -154,10 +155,10 @@ write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-express
 dds <- DESeqDataSetFromMatrix(
   countData = counts,
   colData = samples,
-  design = ~ Tissue + BioID)
+  design = ~ Lignin + BioID)
 colnames(dds) <- as.character(colData(dds)$sampleID)
 saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
-#save(dds, file = here("data/analysis/salmon/dds.rda"))
+save(dds, file = here("data/analysis/salmon/dds.rda"))
 
 #' Check the size factors (_i.e._ the sequencing library size effect)
 #' 
@@ -229,24 +230,24 @@ legend("topright",
 par(mar = mar)
 
 #' ### 2D
-pc.dat <- bind_cols(PC2 = pc$x[, 2],
-                    PC4 = pc$x[, 4],
+pc.dat <- bind_cols(PC1 = pc$x[, 1],
+                    PC2 = pc$x[, 2],
                     samples)
 
-p <- ggplot(pc.dat, aes(x = PC2, y = PC4, col = Tissue, shape = BioID, text = sampleID)) + 
+p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = BioID, text = sampleID)) + 
   geom_point(size = 2) + 
   ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts")
 
 ggplotly(p) %>% 
-  layout(xaxis = list(title = paste("PC2 (", percent[2], "%)", sep = "")),
-         yaxis = list(title = paste("PC4 (", percent[4], "%)", sep = "")))
+  layout(xaxis = list(title = paste("PC2 (", percent[1], "%)", sep = "")),
+         yaxis = list(title = paste("PC4 (", percent[2], "%)", sep = "")))
 # add replicate number, plot number instead of shapes
 
 #' ### Heatmap
 #' 
 #' Filter for noise
 #' 
-conds <- factor(paste(samples$Tissue, samples$BioID))
+conds <- factor(paste(samples$BioID))
 sels <- rangeFeatureSelect(counts = vst,
                            conditions = conds,
                            nrep = 5)
@@ -254,17 +255,17 @@ vst.cutoff <- 2
 
 #' * Heatmap of "all" genes
 #' (Added different margins and turned the Col labels 45 degrees)
-par(mar=c(7, 4, 4, 2)+0.1)
-hm <- heatmap.2(t(scale(t(vst[sels[[vst.cutoff + 1]], ]))),
-          distfun = pearson.dist,
-          hclustfun = function(X){hclust(X, method = "ward.D2")},
-          labRow = NA, trace = "none",
-          labCol = conds,
-          margins = c(12, 8),
-          srtCol = 45,
-          col = hpal)
+#par(mar=c(7, 4, 4, 2)+0.1)
+#hm <- heatmap.2(t(scale(t(vst[sels[[vst.cutoff + 1]], ]))),
+#          distfun = pearson.dist,
+#          hclustfun = function(X){hclust(X, method = "ward.D2")},
+#          labRow = NA, trace = "none",
+#          labCol = conds,
+#          margins = c(12, 8),
+#          srtCol = 45,
+#          col = hpal)
 
-plot(as.hclust(hm$colDendrogram), xlab = "", sub = "")
+#plot(as.hclust(hm$colDendrogram), xlab = "", sub = "")
 
 #' ## Conclusion
 #' CHANGEME
