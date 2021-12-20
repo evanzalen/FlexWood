@@ -73,7 +73,7 @@ mar <- par("mar")
                               plot=TRUE,verbose=TRUE,
                               export=TRUE,default_dir=here("data/analysis/DE"),
                               default_prefix="DE-",
-                              labels=colnames(dds),
+                              labels=dds$Name,
                               sample_sel=1:ncol(dds),
                               expression_cutoff=0,
                               debug=FALSE,filter=c("median",NULL),...){
@@ -198,7 +198,7 @@ mar <- par("mar")
             if(!dir.exists(default_dir)){
                 dir.create(default_dir,showWarnings=FALSE,recursive=TRUE,mode="0771")
             }
-            write.csv(res,file=file.path(default_dir,paste0(default_prefix,"results.csv")))
+            write.csv(res,file = file.path(default_dir,paste0(default_prefix,"results.csv")))
             write.csv(res[sel,],file.path(default_dir,paste0(default_prefix,"genes.csv")))
         }
         if(plot){
@@ -271,17 +271,17 @@ extractEnrichmentResults <- function(enrichment,task="go",
 #' that contains a DESeqDataSet object. If you ran the 
 #' biological QA template, you need not change anything
 #' ```
-load(here("data/analysis/salmon/dds.rda"))
+load(here("data/analysis/salmon/dds-S339.rda"))
 
 #' ## Normalisation for visualisation
+
 vsd <- varianceStabilizingTransformation(dds, blind = FALSE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
 dir.create(here("data/analysis/DE"), showWarnings = FALSE)
-save(vst, file = here("data/analysis/DE/vst-aware.rda"))
+save(vst, file = here("data/analysis/DE/vst-aware-S339.rda"))
 write_delim(as.data.frame(vst) %>% rownames_to_column("ID"),
-            here("data/analysis/DE/vst-aware.tsv"))
-
+            here("data/analysis/DE/vst-aware-S339.tsv"))
 
 #' ## Gene of interests
 #' ```{r goi, echo=FALSE,eval=FALSE}
@@ -328,7 +328,7 @@ resultsNames(dds)
 
 #' ```{r contrast, echo=FALSE,eval=FALSE}
 contrast1L <- extract_results(dds = dds, vst = vst, contrast = "BioID_T89_ROT_vs_T89_STA")
-contrast2L <- extract_results(dds = dds, vst = vst, contrast = "Lignin_no_vs_yes")
+contrast2L <- extract_results(dds = dds, vst = vst, contrast = "TW_no_vs_yes")
 #' ```
 
 #' ```
@@ -362,8 +362,8 @@ resultsNames(ddsx)
 contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA")
 contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA")
 
-contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "Lignin_no_vs_yes")
-contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "Lignin_no_vs_yes")
+contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "TW_no_vs_yes")
+contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "TW_no_vs_yes")
 
 #' ### Venn Diagram
 #' ```{r venn, echo = FALSE, eval = FALSE}
@@ -378,15 +378,15 @@ res.list <- list(c(contrast1p, contrast1x))
 #' ```{r venn2, echo=FALSE,eval=FALSE}
 grid.newpage()
 grid.draw(draw.pairwise.venn(area1 = length(contrast1pL$all), area2 = length(contrast2pL$all),
-                             cross.area = length(intersect(contrast1pL$all, contrast2pL$all)), category = c("BioID", "Lignin"),
-                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(45, 225), euler.d = TRUE, sep.dist = 0.09,
+                             cross.area = length(intersect(contrast1pL$all, contrast2pL$all)), category = c("BioID", "TW"),
+                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(225, 180), euler.d = TRUE, sep.dist = 0.09,
                              rotation.degree = 45, filename = NULL
 ))
 
 grid.newpage()
 grid.draw(draw.pairwise.venn(area1 = length(contrast1xL$all), area2 = length(contrast2xL$all),
-                             cross.area = length(intersect(contrast2pL$all, contrast2xL$all)), category = c("BioID", "Lignin"),
-                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(45, 225), euler.d = TRUE, sep.dist = 0.09,
+                             cross.area = length(intersect(contrast2pL$all, contrast2xL$all)), category = c("BioID", "TW"),
+                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(225, 180), euler.d = TRUE, sep.dist = 0.09,
                              rotation.degree = 45, filename = NULL
 ))
 #' ```
@@ -403,25 +403,21 @@ aspwood <- read_tsv(aspwood_file,
                col_types = NULL, show_col_types = FALSE)
 as.factor(aspwood$dataset)
 
+#' Expression values
+aspwood_expr_file <- "ftp://anonymous@plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/Expression/AspWood_tpm.txt"
+aspwood_expr <- read_tsv(aspwood_expr_file,
+                      col_names = c("gene", "sample", "tpm"),
+                      col_types = "ccd") %>% 
+  separate(aspwood_expr, col = c("gene", "sample", "tpm"), sep = "\t", remove = FALSE, convert = TRUE)
+
 #' Lets look at the genes of interest (GOI) a little closer.
-commonDE_P <- intersect(contrast1pL$all, contrast2pL$all)
-commonDE_X <- intersect(contrast1xL$all, contrast2xL$all)
+vst_PBID <- vstp[rownames(vstp) %in% contrast1pL$all,]
+vst_PLig <- vstp[rownames(vstp) %in% contrast2pL$all,]
+vst_XBID <- vstx[rownames(vstx) %in% contrast1xL$all,]
+vst_XLig <- vstx[rownames(vstx) %in% contrast2xL$all,]
 
-PuniqueBID <- setdiff(contrast1pL$all, commonDE_P) # Unique Phloem genes for BioID
-XuniqueBID <- setdiff(contrast1xL$all, commonDE_X) # Unique Xylem genes for BioID
-PuniqueLig <- setdiff(contrast2pL$all, commonDE_P) # Unique Phloem genes for Lignin
-XuniqueLig <- setdiff(contrast2xL$all, commonDE_X) # Unique Xylem genes for Lignin
-
-vst_comP <- vstp[rownames(vstp) %in% commonDE_P,]
-vst_comX <- vstx[rownames(vstx) %in% commonDE_X,]
-
-vst_PBID <- vstp[rownames(vstp) %in% PuniqueBID,]
-vst_PLig <- vstp[rownames(vstp) %in% PuniqueLig,]
-vst_XBID <- vstx[rownames(vstx) %in% XuniqueBID,]
-vst_XLig <- vstx[rownames(vstx) %in% XuniqueLig,]
-
-condsP <- factor(paste(ddsp$BioID, ddsp$Lignin))
-condsX <- factor(paste(ddsx$BioID, ddsx$Lignin))
+condsP <- factor(paste(ddsp$BioID, ddsp$TW))
+condsX <- factor(paste(ddsx$Name, ddsx$TW))
 
 selsp <- rangeFeatureSelect(counts = vstp[rownames(vstp) %in% PuniqueBID,],
                            conditions = condsP,
@@ -525,12 +521,19 @@ Potra_blast2go <- read_tsv(PotraV2Annotation_file,
                     col_names = TRUE,
                     col_types = NULL, show_col_types = FALSE)[, c("Sequence Name", "Annotation GO Count", "Annotation GO ID", "Annotation GO Term", "Annotation GO Category")]
 Potra_blast2go$`Sequence Name` <- gsub("\\.\\d+", "", Potra_blast2go$`Sequence Name`)
-AnnotPBID <- XuniqueBID %in% Potra_blast2go$`Sequence Name`
+AnnotPBID <- Potra_blast2go[Potra_blast2go %in% contrast1pL$all,]
 
-write.csv(PuniqueBID, here("data/analysis/DE/unique_phloem_BioID.csv"))
-write.csv(PuniqueLig, here("data/analysis/DE/unique_phloem_Lignin.csv"))
-write.csv(XuniqueBID, here("data/analysis/DE/unique_xylem_BioID.csv"))
-write.csv(XuniqueLig, here("data/analysis/DE/unique_xylem_Lignin.csv"))
+DE_annot <- left_join(read_csv(here("data/analysis/DE/DE-genes.csv")) %>% rownames_to_column("Sequence Name"), Potra_blast2go$`Sequence Name`)
+
+annot <-read_table(......
+                   annot %>% group_by(ID) %>% summarise(GO=unite(GO,sep="|")
+                                                        result %>% left_join(annot,by="Sequence Name"))
+                                                        
+write.csv(contrast1pL$all, here("data/analysis/DE/unique_phloem_BioID-S339.csv"))
+write.csv(contrast2pL$all, here("data/analysis/DE/unique_phloem_TW-S339.csv"))
+write.csv(contrast1xL$all, here("data/analysis/DE/unique_xylem_BioID-S339.csv"))
+write.csv(contrast2xL$all, here("data/analysis/DE/unique_xylem_TW-S339.csv"))
+
 #' # First Degree Neighbours of Genes of Interest
 #' Returns a dataframe of 1st degree neighbours
 #' from an edge list and a collection of genes.

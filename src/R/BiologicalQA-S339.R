@@ -89,6 +89,9 @@ names(filelist) <- samples$Name
 counts <- suppressMessages(round(tximport(files = filelist, 
                                   type = "salmon",
                                   tx2gene = tx2gene)$counts))
+counts <- subset(counts, select = -c(X_S339, P_S339))
+
+samples <- samples[-c(8, 18),]
 
 #' ## Quality Control
 #' * Check how many genes are never expressed
@@ -140,7 +143,7 @@ ggplot(dat, aes(x = values, group = ind, col = Tissue)) +
 
 #' ## Export
 dir.create(here("data/analysis/salmon"), showWarnings = FALSE, recursive = TRUE)
-write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-expression_data.csv"))
+write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-expression_data-S339.csv"))
 
 #' # Data normalisation 
 #' ## Preparation
@@ -158,8 +161,8 @@ dds <- DESeqDataSetFromMatrix(
   colData = samples,
   design = ~ TW + BioID)
 colnames(dds) <- as.character(colData(dds)$Name)
-saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
-save(dds, file = here("data/analysis/salmon/dds.rda"))
+saveRDS(dds, file = here("data/analysis/salmon/dds-S339.rds"))
+save(dds, file = here("data/analysis/salmon/dds-S339.rda"))
 
 #' Check the size factors (_i.e._ the sequencing library size effect)
 #' 
@@ -172,7 +175,7 @@ boxplot(sizes, main = "Sequencing libraries size factor")
 vsd <- varianceStabilizingTransformation(dds, blind = TRUE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
-saveRDS(vst, file = here("data/analysis/salmon/vst.rds"))
+saveRDS(vst, file = here("data/analysis/salmon/vst-S339.rds"))
 
 #' * Validation
 #' 
@@ -231,17 +234,17 @@ legend("topright",
 par(mar = mar)
 
 #' ### 2D
-pc.dat <- bind_cols(PC2 = pc$x[, 2],
-                    PC3 = pc$x[, 3],
+pc.dat <- bind_cols(PC1 = pc$x[, 1],
+                    PC2 = pc$x[, 2],
                     samples)
 
-p <- ggplot(pc.dat, aes(x = PC2, y = PC3, col = Tissue, shape = BioID, text = sampleID)) + 
+p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = BioID, text = sampleID)) + 
   geom_point(size = 2) + 
   ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts")
 
 ggplotly(p) %>% 
-  layout(xaxis = list(title = paste("PC2 (", percent[2], "%)", sep = "")),
-         yaxis = list(title = paste("PC3 (", percent[3], "%)", sep = "")))
+  layout(xaxis = list(title = paste("PC1 (", percent[1], "%)", sep = "")),
+         yaxis = list(title = paste("PC2 (", percent[2], "%)", sep = "")))
 # add replicate number, plot number instead of shapes
 
 #' ### Heatmap
