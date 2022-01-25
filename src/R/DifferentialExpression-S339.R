@@ -18,6 +18,8 @@ suppressPackageStartupMessages({
     library(gplots)
     library(here)
     library(hyperSpec)
+    library(igraph)
+    library(magrittr)
     library(RColorBrewer)
     library(tidyverse)
     library(VennDiagram)
@@ -73,6 +75,7 @@ mar <- par("mar")
                               plot=TRUE,verbose=TRUE,
                               export=TRUE,default_dir=here("data/analysis/DE"),
                               default_prefix="DE-",
+                              annot = tibble(),
                               labels=dds$Name,
                               sample_sel=1:ncol(dds),
                               expression_cutoff=0,
@@ -186,6 +189,8 @@ mar <- par("mar")
                         lfc,expression_cutoff))
     }
     
+    res %<>% as.data.frame() %>% rownames_to_column("ID")
+    
     # proceed only if there are DE genes
     if(sum(sel) > 0){
         val <- rowSums(vst[sel,sample_sel])==0
@@ -195,11 +200,13 @@ mar <- par("mar")
         }    
         
         if(export){
-            if(!dir.exists(default_dir)){
+          if(nrow(annot) > 0) {
+          res %<>% left_join(annot, by = "ID")}
+          if(!dir.exists(default_dir)){
                 dir.create(default_dir,showWarnings=FALSE,recursive=TRUE,mode="0771")
             }
-            write.csv(res,file = file.path(default_dir,paste0(default_prefix,"results.csv")))
-            write.csv(res[sel,],file.path(default_dir,paste0(default_prefix,"genes.csv")))
+            write_csv(res,file = file.path(default_dir,paste0(default_prefix,"results.csv")))
+            write_csv(res[sel,],file.path(default_dir,paste0(default_prefix,"genes.csv")))
         }
         if(plot){
             heatmap.2(t(scale(t(vst[sel,sample_sel]))),
@@ -210,9 +217,9 @@ mar <- par("mar")
             )
         }
     }
-    return(list(all=rownames(res[sel,]),
-                up=rownames(res[sel & res$log2FoldChange > 0,]),
-                dn=rownames(res[sel & res$log2FoldChange < 0,])))
+    return(list(all=res[sel, "ID"],
+                up=res[sel & res$log2FoldChange > 0, "ID"],
+                dn=res[sel & res$log2FoldChange < 0, "ID"]))
 }
 
 #' 3. extract and plot the enrichment results
@@ -282,6 +289,14 @@ dir.create(here("data/analysis/DE"), showWarnings = FALSE)
 save(vst, file = here("data/analysis/DE/vst-aware-S339.rda"))
 write_delim(as.data.frame(vst) %>% rownames_to_column("ID"),
             here("data/analysis/DE/vst-aware-S339.tsv"))
+
+#' Getting the annotation for the DE genes itself.
+PotraV2Annotation_file <- "ftp://plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/annotation/blast2go/Potra22_blast2go_GO_export.txt"
+Potra_blast2go <- read_tsv(PotraV2Annotation_file, 
+                           show_col_types = FALSE) %>%
+  filter(grepl("\\.1$", `Sequence Name`)) %>% 
+  mutate(ID = gsub("\\.\\d+$", "", `Sequence Name`)) %>% 
+  select("ID", matches("Annotation|Enzyme|InterPro"))
 
 #' ## Gene of interests
 #' ```{r goi, echo=FALSE,eval=FALSE}
@@ -359,11 +374,11 @@ plotDispEsts(ddsx)
 resultsNames(ddsp)
 resultsNames(ddsx)
 
-contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA")
-contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA")
+contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA", annot = Potra_blast2go)
+contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA", annot = Potra_blast2go)
 
-contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "TW_no_vs_yes")
-contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "TW_no_vs_yes")
+contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "TW_no_vs_yes", annot = Potra_blast2go)
+contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "TW_no_vs_yes", annot = Potra_blast2go)
 
 #' ### Venn Diagram
 #' ```{r venn, echo = FALSE, eval = FALSE}
@@ -515,25 +530,8 @@ enr_XuniqueLig <- gopher(XuniqueLig,
 write.csv(enr_XuniqueBID[["go"]], here("data/analysis/DE/GO_DE_xylem_BioID.csv"))
 write.csv(enr_XuniqueLig[["go"]], here("data/analysis/DE/GO_DE_xylem_Lignin.csv"))
 
-#' Getting the annotation for the DE genes itself.
-PotraV2Annotation_file <- "ftp://plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/annotation/blast2go/Potra22_blast2go_GO_export.txt"
-Potra_blast2go <- read_tsv(PotraV2Annotation_file, 
-                    col_names = TRUE,
-                    col_types = NULL, show_col_types = FALSE)[, c("Sequence Name", "Annotation GO Count", "Annotation GO ID", "Annotation GO Term", "Annotation GO Category")]
-Potra_blast2go$`Sequence Name` <- gsub("\\.\\d+", "", Potra_blast2go$`Sequence Name`)
-AnnotPBID <- Potra_blast2go[Potra_blast2go %in% contrast1pL$all,]
 
-DE_annot <- left_join(read_csv(here("data/analysis/DE/DE-genes.csv")) %>% rownames_to_column("Sequence Name"), Potra_blast2go$`Sequence Name`)
-
-annot <-read_table(......
-                   annot %>% group_by(ID) %>% summarise(GO=unite(GO,sep="|")
-                                                        result %>% left_join(annot,by="Sequence Name"))
-                                                        
-write.csv(contrast1pL$all, here("data/analysis/DE/unique_phloem_BioID-S339.csv"))
-write.csv(contrast2pL$all, here("data/analysis/DE/unique_phloem_TW-S339.csv"))
-write.csv(contrast1xL$all, here("data/analysis/DE/unique_xylem_BioID-S339.csv"))
-write.csv(contrast2xL$all, here("data/analysis/DE/unique_xylem_TW-S339.csv"))
-
+  
 #' # First Degree Neighbours of Genes of Interest
 #' Returns a dataframe of 1st degree neighbours
 #' from an edge list and a collection of genes.
@@ -561,8 +559,45 @@ getFDN <- function(edgelist, genes)
   res <- setNames(unlist(res, use.names=F),rep(names(res), lengths(res)))
   myRes <- data.frame(FDN = res, GOI = names(res))
 }
+#FDNtest <- getFDN(edgelist[,1:2], contrast1pL$all)
+
+#' Phloem
+edgelist <- read_tsv("/mnt/picea/projects/aspseq/nstreet/v2/network/aspwood/EdgeList.txt", 
+                     col_names = c("Source", "Target", "Direction", "irp_score"))[,-3]
+
+sourcephloem <- as.data.frame(edgelist[edgelist$Source %in% contrast1pL$all,])
+targetphloem <- as.data.frame(edgelist[edgelist$Target %in% contrast1pL$all,][,c(2:1,3)])
+names(targetphloem) <- c("Source", "Target", "irp_score")
+
+FDNphloem_s339 <- bind_rows(sourcephloem, targetphloem)
+write.csv(FDNphloem_s339, here("data/analysis/DE/FDNphloem-s339.csv"))
+
+#' Xylem
+sourcexylem <- as.data.frame(edgelist[edgelist$Source %in% contrast1xL$all,])
+targetxylem <- as.data.frame(edgelist[edgelist$Target %in% contrast1xL$all,][,c(2:1,3)])
+names(targetxylem) <- c("Source", "Target", "irp_score")
+
+FDNxylem_s339 <- (bind_rows(sourcexylem, targetxylem))
+FDNxylem_s339 <- distinct(FDNxylem_s339[,1:2], .keep_all = FALSE)
+write.csv(FDNxylem_s339, here("data/analysis/DE/FDNxylem-s339.csv"))
 
 
+grafxylem <- graph.edgelist(as.matrix(FDNxylem_s339[,1:2]))
+clustxylem <- clusters(grafxylem)
+
+names(FDNxylem_s339) <- c("GOI", "FDN", "IRP")
+
+boolmatrixylem <- sapply(split(FDNxylem_s339$FDN,FDNxylem_s339$GOI), function(v){contrast1xL$all %in%v})
+boolXylem <- as.matrix(sapply(split(FDNxylem_s339$FDN, FDNxylem_s339$GOI), function(v, goi){goi %in% v}, unique(FDNxylem_s339$GOI)))
+
+HMBOOL <- as.numeric(as.matrix(str(boolXylem)))
+hmBool <- heatmap.2(t(HMBOOL),
+                    distfun = pearson.dist,
+                    hclustfun = function(X){hclust(X, method = "ward.D2")},
+                    labRow = NA, trace = "none",
+                    margins = c(12, 8),
+                    srtCol = 45,
+                    col = hpal)
 #' ### Gene Ontology enrichment
 #' ```{r go, echo=FALSE, eval=FALSE}
 #' Once you have obtained a list of candidate genes, you most probably want

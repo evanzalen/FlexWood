@@ -73,147 +73,153 @@ mar <- par("mar")
                               plot=TRUE,verbose=TRUE,
                               export=TRUE,default_dir=here("data/analysis/DE"),
                               default_prefix="DE-",
-                              labels=colnames(dds),
+                              annot = tibble(),
+                              labels=dds$Name,
                               sample_sel=1:ncol(dds),
                               expression_cutoff=0,
                               debug=FALSE,filter=c("median",NULL),...){
+  
+  # get the filter
+  if(!is.null(match.arg(filter))){
+    filter <- rowMedians(counts(dds,normalized=TRUE))
+    message("Using the median normalized counts as default, set filter=NULL to revert to using the mean")
+  }
+  
+  # validation
+  if(length(contrast)==1){
+    res <- results(dds,name=contrast,filter = filter)
+  } else {
+    res <- results(dds,contrast=contrast,filter = filter)
+  }
+  
+  stopifnot(length(sample_sel)==ncol(vst))
+  
+  if(plot){
+    par(mar=c(5,5,5,5))
+    volcanoPlot(res)
+    par(mar=mar)
+  }
+  
+  # a look at independent filtering
+  if(plot){
+    plot(metadata(res)$filterNumRej,
+         type="b", ylab="number of rejections",
+         xlab="quantiles of filter")
+    lines(metadata(res)$lo.fit, col="red")
+    abline(v=metadata(res)$filterTheta)
+  }
+  
+  if(verbose){
+    message(sprintf("The independent filtering cutoff is %s, removing %s of the data",
+                    round(metadata(res)$filterThreshold,digits=5),
+                    names(metadata(res)$filterThreshold)))
     
-    # get the filter
-    if(!is.null(match.arg(filter))){
-        filter <- rowMedians(counts(dds,normalized=TRUE))
-        message("Using the median normalized counts as default, set filter=NULL to revert to using the mean")
+    max.theta <- metadata(res)$filterNumRej[which.max(metadata(res)$filterNumRej$numRej),"theta"]
+    message(sprintf("The independent filtering maximises for %s %% of the data, corresponding to a base mean expression of %s (library-size normalised read)",
+                    round(max.theta*100,digits=5),
+                    round(quantile(counts(dds, normalized = TRUE), probs = max.theta), digits = 5)))
+  }
+  
+  if(plot){
+    qtl.exp=quantile(counts(dds,normalized=TRUE),probs=metadata(res)$filterNumRej$theta)
+    dat <- data.frame(thetas=metadata(res)$filterNumRej$theta,
+                      qtl.exp=qtl.exp,
+                      number.degs=sapply(lapply(qtl.exp,function(qe){
+                        res$padj <= padj & abs(res$log2FoldChange) >= lfc & 
+                          ! is.na(res$padj) & res$baseMean >= qe
+                      }),sum))
+    if(debug){
+      plot(ggplot(dat,aes(x=thetas,y=qtl.exp)) + 
+             geom_line() + geom_point() +
+             scale_x_continuous("quantiles of expression") + 
+             scale_y_continuous("base mean expression") +
+             geom_hline(yintercept=expression_cutoff,
+                        linetype="dotted",col="red"))
+      
+      p <- ggplot(dat,aes(x=thetas,y=qtl.exp)) + 
+        geom_line() + geom_point() +
+        scale_x_continuous("quantiles of expression") + 
+        scale_y_log10("base mean expression") + 
+        geom_hline(yintercept=expression_cutoff,
+                   linetype="dotted",col="red")
+      suppressMessages(suppressWarnings(plot(p)))
+      
+      plot(ggplot(dat,aes(x=thetas,y=number.degs)) + 
+             geom_line() + geom_point() +
+             geom_hline(yintercept=dat$number.degs[1],linetype="dashed") +
+             scale_x_continuous("quantiles of expression") + 
+             scale_y_continuous("Number of DE genes"))
+      
+      plot(ggplot(dat,aes(x=thetas,y=number.degs[1] - number.degs),aes()) + 
+             geom_line() + geom_point() +
+             scale_x_continuous("quantiles of expression") + 
+             scale_y_continuous("Cumulative number of DE genes"))
+      
+      plot(ggplot(data.frame(x=dat$thetas[-1],
+                             y=diff(dat$number.degs[1] - dat$number.degs)),aes(x,y)) + 
+             geom_line() + geom_point() +
+             scale_x_continuous("quantiles of expression") + 
+             scale_y_continuous("Number of DE genes per interval"))
+      
+      plot(ggplot(data.frame(x=dat$qtl.exp[-1],
+                             y=diff(dat$number.degs[1] - dat$number.degs)),aes(x,y)) + 
+             geom_line() + geom_point() +
+             scale_x_continuous("base mean of expression") + 
+             scale_y_continuous("Number of DE genes per interval"))
+      
+      p <- ggplot(data.frame(x=dat$qtl.exp[-1],
+                             y=diff(dat$number.degs[1] - dat$number.degs)),aes(x,y)) + 
+        geom_line() + geom_point() +
+        scale_x_log10("base mean of expression") + 
+        scale_y_continuous("Number of DE genes per interval") + 
+        geom_vline(xintercept=expression_cutoff,
+                   linetype="dotted",col="red")
+      suppressMessages(suppressWarnings(plot(p)))
     }
+  }
+  
+  sel <- res$padj <= padj & abs(res$log2FoldChange) >= lfc & ! is.na(res$padj) & 
+    res$baseMean >= expression_cutoff
+  
+  if(verbose){
+    message(sprintf("There are %s genes that are DE with the following parameters: FDR <= %s, |log2FC| >= %s, base mean expression > %s",
+                    sum(sel),padj,
+                    lfc,expression_cutoff))
+  }
+  
+  res %<>% as.data.frame() %>% rownames_to_column("ID")
+  
+  # proceed only if there are DE genes
+  if(sum(sel) > 0){
+    val <- rowSums(vst[sel,sample_sel])==0
+    if (sum(val) >0){
+      warning(sprintf("There are %s DE genes that have no vst expression in the selected samples",sum(val)))
+      sel[sel][val] <- FALSE
+    }    
     
-    # validation
-    if(length(contrast)==1){
-        res <- results(dds,name=contrast,filter = filter)
-    } else {
-        res <- results(dds,contrast=contrast,filter = filter)
+    if(export){
+      if(nrow(annot) > 0) {
+        res %<>% left_join(annot, by = "ID")}
+      if(!dir.exists(default_dir)){
+        dir.create(default_dir,showWarnings=FALSE,recursive=TRUE,mode="0771")
+      }
+      write_csv(res,file = file.path(default_dir,paste0(default_prefix,"results.csv")))
+      write_csv(res[sel,],file.path(default_dir,paste0(default_prefix,"genes.csv")))
     }
-    
-    stopifnot(length(sample_sel)==ncol(vst))
-    
     if(plot){
-        par(mar=c(5,5,5,5))
-        volcanoPlot(res)
-        par(mar=mar)
+      heatmap.2(t(scale(t(vst[sel,sample_sel]))),
+                distfun = pearson.dist,
+                hclustfun = function(X){hclust(X,method="ward.D2")},
+                trace="none",col=hpal,labRow = FALSE,
+                labCol=labels[sample_sel],...
+      )
     }
-    
-    # a look at independent filtering
-    if(plot){
-        plot(metadata(res)$filterNumRej,
-             type="b", ylab="number of rejections",
-             xlab="quantiles of filter")
-        lines(metadata(res)$lo.fit, col="red")
-        abline(v=metadata(res)$filterTheta)
-    }
-    
-    if(verbose){
-        message(sprintf("The independent filtering cutoff is %s, removing %s of the data",
-                        round(metadata(res)$filterThreshold,digits=5),
-                        names(metadata(res)$filterThreshold)))
-        
-        max.theta <- metadata(res)$filterNumRej[which.max(metadata(res)$filterNumRej$numRej),"theta"]
-        message(sprintf("The independent filtering maximises for %s %% of the data, corresponding to a base mean expression of %s (library-size normalised read)",
-                        round(max.theta*100,digits=5),
-                        round(quantile(counts(dds, normalized = TRUE), probs = max.theta), digits = 5)))
-    }
-    
-    if(plot){
-        qtl.exp=quantile(counts(dds,normalized=TRUE),probs=metadata(res)$filterNumRej$theta)
-        dat <- data.frame(thetas=metadata(res)$filterNumRej$theta,
-                          qtl.exp=qtl.exp,
-                          number.degs=sapply(lapply(qtl.exp,function(qe){
-                              res$padj <= padj & abs(res$log2FoldChange) >= lfc & 
-                                  ! is.na(res$padj) & res$baseMean >= qe
-                          }),sum))
-        if(debug){
-            plot(ggplot(dat,aes(x=thetas,y=qtl.exp)) + 
-                     geom_line() + geom_point() +
-                     scale_x_continuous("quantiles of expression") + 
-                     scale_y_continuous("base mean expression") +
-                     geom_hline(yintercept=expression_cutoff,
-                                linetype="dotted",col="red"))
-        
-            p <- ggplot(dat,aes(x=thetas,y=qtl.exp)) + 
-                geom_line() + geom_point() +
-                scale_x_continuous("quantiles of expression") + 
-                scale_y_log10("base mean expression") + 
-                geom_hline(yintercept=expression_cutoff,
-                           linetype="dotted",col="red")
-            suppressMessages(suppressWarnings(plot(p)))
-            
-            plot(ggplot(dat,aes(x=thetas,y=number.degs)) + 
-                     geom_line() + geom_point() +
-                     geom_hline(yintercept=dat$number.degs[1],linetype="dashed") +
-                     scale_x_continuous("quantiles of expression") + 
-                     scale_y_continuous("Number of DE genes"))
-            
-            plot(ggplot(dat,aes(x=thetas,y=number.degs[1] - number.degs),aes()) + 
-                     geom_line() + geom_point() +
-                     scale_x_continuous("quantiles of expression") + 
-                     scale_y_continuous("Cumulative number of DE genes"))
-            
-            plot(ggplot(data.frame(x=dat$thetas[-1],
-                                   y=diff(dat$number.degs[1] - dat$number.degs)),aes(x,y)) + 
-                     geom_line() + geom_point() +
-                     scale_x_continuous("quantiles of expression") + 
-                     scale_y_continuous("Number of DE genes per interval"))
-            
-            plot(ggplot(data.frame(x=dat$qtl.exp[-1],
-                                   y=diff(dat$number.degs[1] - dat$number.degs)),aes(x,y)) + 
-                     geom_line() + geom_point() +
-                     scale_x_continuous("base mean of expression") + 
-                     scale_y_continuous("Number of DE genes per interval"))
-            
-            p <- ggplot(data.frame(x=dat$qtl.exp[-1],
-                                   y=diff(dat$number.degs[1] - dat$number.degs)),aes(x,y)) + 
-                geom_line() + geom_point() +
-                scale_x_log10("base mean of expression") + 
-                scale_y_continuous("Number of DE genes per interval") + 
-                geom_vline(xintercept=expression_cutoff,
-                           linetype="dotted",col="red")
-            suppressMessages(suppressWarnings(plot(p)))
-        }
-    }
-    
-    sel <- res$padj <= padj & abs(res$log2FoldChange) >= lfc & ! is.na(res$padj) & 
-        res$baseMean >= expression_cutoff
-    
-    if(verbose){
-        message(sprintf("There are %s genes that are DE with the following parameters: FDR <= %s, |log2FC| >= %s, base mean expression > %s",
-                        sum(sel),padj,
-                        lfc,expression_cutoff))
-    }
-    
-    # proceed only if there are DE genes
-    if(sum(sel) > 0){
-        val <- rowSums(vst[sel,sample_sel])==0
-        if (sum(val) >0){
-            warning(sprintf("There are %s DE genes that have no vst expression in the selected samples",sum(val)))
-            sel[sel][val] <- FALSE
-        }    
-        
-        if(export){
-            if(!dir.exists(default_dir)){
-                dir.create(default_dir,showWarnings=FALSE,recursive=TRUE,mode="0771")
-            }
-            write.csv(res,file=file.path(default_dir,paste0(default_prefix,"results.csv")))
-            write.csv(res[sel,],file.path(default_dir,paste0(default_prefix,"genes.csv")))
-        }
-        if(plot){
-            heatmap.2(t(scale(t(vst[sel,sample_sel]))),
-                      distfun = pearson.dist,
-                      hclustfun = function(X){hclust(X,method="ward.D2")},
-                      trace="none",col=hpal,labRow = FALSE,
-                      labCol=labels[sample_sel],...
-            )
-        }
-    }
-    return(list(all=rownames(res[sel,]),
-                up=rownames(res[sel & res$log2FoldChange > 0,]),
-                dn=rownames(res[sel & res$log2FoldChange < 0,])))
+  }
+  return(list(all=res[sel, "ID"],
+              up=res[sel & res$log2FoldChange > 0, "ID"],
+              dn=res[sel & res$log2FoldChange < 0, "ID"]))
 }
+
 
 #' 3. extract and plot the enrichment results
 extractEnrichmentResults <- function(enrichment,task="go",
@@ -282,6 +288,13 @@ save(vst, file = here("data/analysis/DE/vst-aware.rda"))
 write_delim(as.data.frame(vst) %>% rownames_to_column("ID"),
             here("data/analysis/DE/vst-aware.tsv"))
 
+#' Getting the annotation for the DE genes itself.
+PotraV2Annotation_file <- "ftp://plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/annotation/blast2go/Potra22_blast2go_GO_export.txt"
+Potra_blast2go <- read_tsv(PotraV2Annotation_file, 
+                           show_col_types = FALSE) %>%
+  filter(grepl("\\.1$", `Sequence Name`)) %>% 
+  mutate(ID = gsub("\\.\\d+$", "", `Sequence Name`)) %>% 
+  select("ID", matches("Annotation|Enzyme|InterPro"))
 
 #' ## Gene of interests
 #' ```{r goi, echo=FALSE,eval=FALSE}
@@ -359,11 +372,11 @@ plotDispEsts(ddsx)
 resultsNames(ddsp)
 resultsNames(ddsx)
 
-contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA")
-contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA")
+contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA", annot = Potra_blast2go)
+contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA", annot = Potra_blast2go)
 
-contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "Lignin_no_vs_yes")
-contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "Lignin_no_vs_yes")
+contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "TW_no_vs_yes", annot = Potra_blast2go)
+contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "TW_no_vs_yes", annot = Potra_blast2go)
 
 #' ### Venn Diagram
 #' ```{r venn, echo = FALSE, eval = FALSE}
