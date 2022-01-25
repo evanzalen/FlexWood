@@ -590,6 +590,10 @@ names(FDNxylem_s339) <- c("GOI", "FDN")
 #boolmatrixylem <- sapply(split(FDNxylem_s339$FDN,FDNxylem_s339$GOI), function(v){contrast1xL$all %in%v})
 boolXylem <- sapply(split(FDNxylem_s339$GOI, FDNxylem_s339$FDN), function(v, goi){as.integer(goi %in% v)}, unique(FDNxylem_s339$GOI))
 
+# actually looks promising
+colSums(t(boolXylem))
+
+#
 hmBool <- heatmap.2(t(boolXylem),
                     labRow = NA, labCol=NA,trace = "none",
                     col = hpal)
