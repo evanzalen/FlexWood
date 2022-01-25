@@ -585,19 +585,15 @@ write.csv(FDNxylem_s339, here("data/analysis/DE/FDNxylem-s339.csv"))
 grafxylem <- graph.edgelist(as.matrix(FDNxylem_s339[,1:2]))
 clustxylem <- clusters(grafxylem)
 
-names(FDNxylem_s339) <- c("GOI", "FDN", "IRP")
+names(FDNxylem_s339) <- c("GOI", "FDN")
 
-boolmatrixylem <- sapply(split(FDNxylem_s339$FDN,FDNxylem_s339$GOI), function(v){contrast1xL$all %in%v})
-boolXylem <- as.matrix(sapply(split(FDNxylem_s339$FDN, FDNxylem_s339$GOI), function(v, goi){goi %in% v}, unique(FDNxylem_s339$GOI)))
+#boolmatrixylem <- sapply(split(FDNxylem_s339$FDN,FDNxylem_s339$GOI), function(v){contrast1xL$all %in%v})
+boolXylem <- sapply(split(FDNxylem_s339$GOI, FDNxylem_s339$FDN), function(v, goi){as.integer(goi %in% v)}, unique(FDNxylem_s339$GOI))
 
-HMBOOL <- as.numeric(as.matrix(str(boolXylem)))
-hmBool <- heatmap.2(t(HMBOOL),
-                    distfun = pearson.dist,
-                    hclustfun = function(X){hclust(X, method = "ward.D2")},
-                    labRow = NA, trace = "none",
-                    margins = c(12, 8),
-                    srtCol = 45,
+hmBool <- heatmap.2(t(boolXylem),
+                    labRow = NA, labCol=NA,trace = "none",
                     col = hpal)
+
 #' ### Gene Ontology enrichment
 #' ```{r go, echo=FALSE, eval=FALSE}
 #' Once you have obtained a list of candidate genes, you most probably want
