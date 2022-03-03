@@ -1,6 +1,6 @@
 #' ---
 #' title: "Gene Of Interest First Degree Neighbour"
-#' author: "Nicolas Delhomme"
+#' author: "Elena van Zalen"
 #' date: "`r Sys.Date()`"
 #' output:
 #'  html_document:
@@ -22,15 +22,30 @@ suppressPackageStartupMessages({
 pal=brewer.pal(8,"Dark2")
 
 #' * Data
-edgelist <- read.table(here("data/Combined_Data/seidr/Network-LAP1/newbackbone/backbone-10-percent-edgelist.txt"),
-                       header=FALSE,as.is=TRUE)
+aspwoodedge <- read.table("/mnt/picea/projects/aspseq/nstreet/v2/network/aspwood/EdgeList.txt",
+                       header=FALSE,as.is=TRUE)[,-3]
 
-#' # Network
-#' We create a combined graf
-sel <- edgelist[,3] == "Directed"
-graf <- graph.edgelist(rbind(as.matrix(edgelist[sel,1:2]),
-                             as.matrix(edgelist[!sel,1:2]),
-                             as.matrix(edgelist[!sel,2:1])),directed=TRUE)
+edgelist <- read.table("~/Git/FlexWood/data/analysis/DE/FDNxylem-s339.txt",
+                       header=TRUE,as.is=TRUE)
+edgelist <- read.table("~/Git/FlexWood/data/analysis/DE/FDNphloem-s339.txt",
+                       header=TRUE,as.is=TRUE)
+
+graf <- graph.edgelist(as.matrix(edgelist[,1:2]))
+clust <- clusters(graf)
+
+comp <- components(graf, "strong")
+
+selectionX <-names(comp$membership)[comp$membership == which(comp$csize == 385)]
+
+strongComp <- list(selectionX)
+write.csv(strongComp, "data/analysis/DE/igraph_strong_components.csv")
+
+
+source(here("UPSCb-common/src/R/gopher.R"))
+suppressPackageStartupMessages(library(jsonlite))
+bg <- unlist(unique(aspwoodedge[,1:2]))
+enrichselec <- gopher(selectionX, background = bg, task = "go", url = "potra2")
+
 
 #' We can check the structure of the graf
 #' 
@@ -38,9 +53,10 @@ graf <- graph.edgelist(rbind(as.matrix(edgelist[sel,1:2]),
 clusters(graf)$csize
 
 #' We can look at the neighborhood of the gene of interests
-goi <- read_tsv(here("doc/goi_shashank.txt"),show_col_types=FALSE)
+goi <- read_csv(here("data/analysis/DE/unique_phloem_BioID-S339.csv"), show_col_types=FALSE)[,2]
 
-stopifnot(all(goi$ID %in% get.vertex.attribute(graf,"name")))
+stopifnot(all(goi$x %in% get.vertex.attribute(graf,"name")))
+stopifnot(all(goi$x %in% edgelist$V1))
 
 #' Extract the first degree neighbors of these genes from the network
 subgraf1 <- make_ego_graph(graf,1,match(goi$ID,get.vertex.attribute(graf,"name")))

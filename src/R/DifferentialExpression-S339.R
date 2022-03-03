@@ -571,7 +571,8 @@ names(targetphloem) <- c("Source", "Target", "irp_score")
 
 FDNphloem_s339 <- bind_rows(sourcephloem, targetphloem)
 write.csv(FDNphloem_s339, here("data/analysis/DE/FDNphloem-s339.csv"))
-
+write.table(FDNphloem_s339, file = here("data/analysis/DE/FDNphloem-s339.txt"), sep = "\t",
+            row.names = FALSE, col.names = TRUE)
 #' Xylem
 sourcexylem <- as.data.frame(edgelist[edgelist$Source %in% contrast1xL$all,])
 targetxylem <- as.data.frame(edgelist[edgelist$Target %in% contrast1xL$all,][,c(2:1,3)])
@@ -580,7 +581,8 @@ names(targetxylem) <- c("Source", "Target", "irp_score")
 FDNxylem_s339 <- (bind_rows(sourcexylem, targetxylem))
 FDNxylem_s339 <- distinct(FDNxylem_s339[,1:2], .keep_all = FALSE)
 write.csv(FDNxylem_s339, here("data/analysis/DE/FDNxylem-s339.csv"))
-
+write.table(FDNxylem_s339, file = here("data/analysis/DE/FDNxylem-s339.txt"), sep = "\t",
+            row.names = FALSE, col.names = TRUE)
 
 grafxylem <- graph.edgelist(as.matrix(FDNxylem_s339[,1:2]))
 clustxylem <- clusters(grafxylem)

@@ -48,7 +48,7 @@ samples <- readr::read_csv(here("doc/Samples.csv"),
                         col_factor(),
                         col_factor(),
                         col_character()
-                      ))
+                      )) 
 
 #' tx2gene translation table
 #' ```{r CHANGEME2,eval=FALSE,echo=FALSE}
@@ -107,7 +107,7 @@ sprintf("%s%% percent (%s) of %s genes are not expressed",
 dat <- tibble(x = colnames(counts), y = colSums(counts)) %>% 
   bind_cols(samples)
 
-ggplot(dat, aes(x, y, fill = samples$BioID)) + geom_col() + 
+ggplot(dat, aes(x, y, fill = samples$Flexure)) + geom_col() + 
   scale_y_continuous(name = "reads") +
   theme(axis.text.x = element_text(angle = 90, size = 4), axis.title.x = element_blank())
 
@@ -131,7 +131,7 @@ ggplot(data.frame(value = log10(rowMeans(counts))), aes(x = value)) +
 #' # If you have more, add them as needed.
 #' ```
 dat <- as.data.frame(log10(counts)) %>% utils::stack() %>% 
-  mutate(Condition = samples$BioID[match(ind, samples$sampleID)]) %>% 
+  mutate(Flexure = samples$Flexure[match(ind, samples$sampleID)]) %>% 
   mutate(Tissue = samples$Tissue[match(ind, samples$sampleID)])
 
 ggplot(dat, aes(x = values, group = ind, col = Tissue)) + 
@@ -156,7 +156,7 @@ write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-express
 dds <- DESeqDataSetFromMatrix(
   countData = counts,
   colData = samples,
-  design = ~ TW + BioID)
+  design = ~ TW + Flexure)
 colnames(dds) <- as.character(colData(dds)$Name)
 saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
 save(dds, file = here("data/analysis/salmon/dds.rda"))
@@ -173,6 +173,7 @@ vsd <- varianceStabilizingTransformation(dds, blind = TRUE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
 saveRDS(vst, file = here("data/analysis/salmon/vst.rds"))
+write.csv(vst, file = here("data/analysis/salmon/normalised-gene-expression_data_with S339.csv"))
 
 #' * Validation
 #' 
@@ -194,7 +195,7 @@ nvar = 2
 #' ```{r CHANGEME8,eval=FALSE,echo=FALSE}
 #' This needs to be adapted to your study design. Add or drop variables as needed.
 #' ```
-nlevel = nlevels(dds$Tissue) * nlevels(dds$BioID) # 4 levels
+nlevel = nlevels(dds$Tissue) * nlevels(dds$Flexure) # 4 levels
 
 #' We plot the percentage explained by the different components, the
 #' red line represent the number of variable in the model, the orange line
@@ -219,38 +220,39 @@ scatterplot3d(pc$x[, 1],
               ylab = paste("Comp. 2 (", percent[2], "%)", sep = ""),
               zlab = paste("Comp. 3 (", percent[3], "%)", sep = ""),
               color = pal[as.integer(dds$Tissue)],
-              pch = c(17:19)[as.integer(dds$BioID)])
+              pch = c(17:19)[as.integer(dds$Flexure)])
 legend("topleft",
        fill = pal[1:nlevels(dds$Tissue)],
        legend = levels(dds$Tissue))
 
 legend("topright",
        pch = 17:19,
-       legend = levels(dds$BioID))
+       legend = levels(dds$Flexure))
 
 par(mar = mar)
 
 #' ### 2D
-pc.dat <- bind_cols(PC2 = pc$x[, 2],
-                    PC3 = pc$x[, 3],
+pc.dat <- bind_cols(PC1 = pc$x[, 1],
+                    PC2 = pc$x[, 2],
                     samples)
 
-p <- ggplot(pc.dat, aes(x = PC2, y = PC3, col = Tissue, shape = BioID, text = sampleID)) + 
+p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = Flexure, text = sampleID)) + 
   geom_point(size = 2) + 
-  ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts")
+  ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts") #+
+  #ggtext check
 
 ggplotly(p) %>% 
-  layout(xaxis = list(title = paste("PC2 (", percent[2], "%)", sep = "")),
-         yaxis = list(title = paste("PC3 (", percent[3], "%)", sep = "")))
+  layout(xaxis = list(title = paste("PC1 (", percent[1], "%)", sep = "")),
+         yaxis = list(title = paste("PC2 (", percent[2], "%)", sep = "")))
 # add replicate number, plot number instead of shapes
 
 #' ### Heatmap
 #' 
 #' Filter for noise
 #' 
-conds <- factor(paste(samples$BioID))
+conds <- factor(paste(samples$Flexure))
 sels <- rangeFeatureSelect(counts = vst,
-                           conditions = conds,
+                           Flexures = conds,
                            nrep = 5)
 vst.cutoff <- 2
 

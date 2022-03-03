@@ -11,9 +11,9 @@
 #' # Setup
 #' ## Environment
 #' Set the working dir
-setwd("~/Git/PoplarBudset")
+setwd("~/Git/FlexWood/")
 #' ```{r set up, echo=FALSE}
-#' knitr::opts_knit$set(root.dir="~/Git/PoplarBudset")
+#' knitr::opts_knit$set(root.dir="~/Git/Flexwood")
 #' ```
 
 #' ## Libraries
@@ -76,48 +76,65 @@ pal <- brewer.pal(8,"Dark2")
 
 #' # Infomap analysis
 #' Read in the original network (not reheadered)
-bgr <- read.delim2(here("data/Combined_Data/seidr/Network/newinfomap/backbone-6-percentBU.txt"),
+bgr <- read.delim2("/mnt/picea/projects/aspseq/nstreet/v2/network/aspwood/EdgeList.txt",
                    stringsAsFactors = FALSE,
-                   header=FALSE,sep="\t")
+                   header=TRUE,sep="\t")
 bg <- unique(unlist(bgr[,2:1])) # background later used for gopher and the directionality in the network
 
 #' Read in the infomap of the network
-NetworkAll.imap <- read.delim(here("data/Combined_Data/seidr/Network/newinfomap/resolveAllN.txt"), header = FALSE, sep ="",
+Network.imap <- read.delim(here("/mnt/picea/projects/aspseq/nstreet/v2/network/aspwood/infomap/resolve.txt"), header = FALSE, sep ="",
                               col.names = c("Path", "lvl1", "lvl2", "lvl3", "dc", "GeneIndex", "Genes"))
 
 ## =================== The first level ====================== ##
 #' Check the total number of clusters and the total number of genes within these clusters
-nr_clus_lvl1 <- unique(NetworkAll.imap$lvl1) #303 clusters at lvl1
+nr_clus_lvl1 <- unique(Network.imap$lvl1) #2 clusters at lvl1
 
 #' Then we obtain the frequencies (number of genes per cluster)
-freq_lvl1 <- as.data.frame(table(NetworkAll.imap$lvl1)) #5431 in the first cluster, this is good
+freq_lvl1 <- as.data.frame(table(Network.imap$lvl1)) #22727 in the first cluster, this is not good
 #' and the cluster names as well (at the moment they are numbers)
-freq_lvl1$Var1 <- names(table(NetworkAll.imap$lvl1))
-
-#' Sum the second column of the first 20 clusters
-counts_lvl1 <-freq_lvl1[order(freq_lvl1$Freq, decreasing = T),]
-sum(counts_lvl1[1:20, 2]) #most genes are in the first 20 clusters (16915)
+freq_lvl1$Var1 <- names(table(Network.imap$lvl1))
 
 #' Check the number of cluster in the lowest granularity (the largest clusters/modules)
-barplot(table(NetworkAll.imap[, 2]), main = "Gene network", xlab = "Main cluster size")
+barplot(table(Network.imap[, 2]), main = "Gene network", xlab = "Main cluster size")
 
-#' Get only the clusters with more than 30 genes (or equal to)
-coi1 <- subset(freq_lvl1, Freq >= 30, select = c(Freq, Var1)) #95 main-clusters
-coi1 <- coi1[order(coi1$Freq, decreasing = TRUE), ]
-write_xlsx(coi1, here("data/Combined_Data/Cytoscape/AllNetwork_Clusterslvl1.xlsx"))
+## =================== The second level ====================== ##
+Network.imap$lvl1_2 <- paste0(Network.imap$lvl1, ":", Network.imap$lvl2)
+
+nr_clus_lvl2 <- unique(Network.imap$lvl1_2) # 57
+freq_lvl2 <- as.data.frame(table(Network.imap$lvl1_2))
+freq_lvl2$Var1 <- names(table(Network.imap$lvl1_2))
+
+#' Sum the second column of the first 20 clusters
+counts_lvl2 <-freq_lvl2[order(freq_lvl2$Freq, decreasing = T), ]
+sum(counts_lvl2[1:20, 2]) #most genes are in the first 20 clusters (22907)
 
 #' The same, but zoomed in the first ~20
 par(mar = c(5.1, 3.1, 3.1, 7.1))
-pander(table(NetworkAll.imap[, 3], xlim = c(0, 20)))
-barplot(table(NetworkAll.imap[, 3]), xlim = c(0, 20))
+pander(table(Network.imap[, 3], xlim = c(0, 20)))
+barplot(table(Network.imap[, 3]), xlim = c(0, 20))
+
+
+## =================== The third level ====================== ##
+Network.imap$lvl1_2_3 <- paste0(Network.imap$lvl1, "", Network.imap$lvl2, "", Network.imap$lvl3)
+
+nr_clus_lvl3 <- unique(Network.imap$lvl1_2_3) # 57
+freq_lvl3 <- as.data.frame(table(Network.imap$lvl1_2_3))
+freq_lvl3$Var1 <- names(table(Network.imap$lvl1_2_3))
 
 #' FDN of GOI
-All_FDN <- list.files(path = here("doc/FirstDegreeNeighbours_All/"), 
+XylemFDN <- list.files(path = here("doc/FirstDegreeNeighbours_All/"), 
                       full.names = TRUE) %>% 
   lapply(read_csv) %>% bind_rows
-FDN_All <- unique(All_FDN[,1])
-FDN_All_infomap <- NetworkAll.imap[NetworkAll.imap[,7] %in% FDN_All$FDN, ]
-barplot(table(FDN_All_infomap[,2]), xlim = c(0, 20))
+FDNxylem <- unique(XylemFDN[,1])
+FDN_xylem_infomap <- Network.imap[Network.imap[,7] %in% FDNxylem$FDN, ]
+barplot(table(FDN_xylem_infomap[,2]), xlim = c(0, 20))
+
+
+goiPhloem <- read_csv(here("data/analysis/DE/unique_phloem_BioID-S339.csv"), show_col_types=FALSE)
+FDN_phloem_infomap <- Network.imap[Network.imap[,7] %in% goiPhloem$x, ]
+barplot(table(FDN_phloem_infomap[,3]), xlim = c(0, 20))
+
+FDN_phloem_infomap$Genes[FDN_phloem_infomap$lvl1_2 == 1:2]
 
 ### =============================== Enrichments ====================================== ###
 #' Obtaining the enrichment for the clusters of interest

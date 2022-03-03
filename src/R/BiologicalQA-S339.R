@@ -91,6 +91,7 @@ counts <- suppressMessages(round(tximport(files = filelist,
                                   tx2gene = tx2gene)$counts))
 counts <- subset(counts, select = -c(X_S339, P_S339))
 
+
 samples <- samples[-c(8, 18),]
 
 #' ## Quality Control
@@ -176,6 +177,7 @@ vsd <- varianceStabilizingTransformation(dds, blind = TRUE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
 saveRDS(vst, file = here("data/analysis/salmon/vst-S339.rds"))
+write.csv(vst, file = here("data/analysis/salmon/normalised-gene-expression_data-S339.csv"))
 
 #' * Validation
 #' 

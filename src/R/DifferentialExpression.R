@@ -341,7 +341,7 @@ resultsNames(dds)
 
 #' ```{r contrast, echo=FALSE,eval=FALSE}
 contrast1L <- extract_results(dds = dds, vst = vst, contrast = "BioID_T89_ROT_vs_T89_STA")
-contrast2L <- extract_results(dds = dds, vst = vst, contrast = "Lignin_no_vs_yes")
+contrast2L <- extract_results(dds = dds, vst = vst, contrast = "TW_no_vs_yes")
 #' ```
 
 #' ```
@@ -544,6 +544,10 @@ write.csv(PuniqueBID, here("data/analysis/DE/unique_phloem_BioID.csv"))
 write.csv(PuniqueLig, here("data/analysis/DE/unique_phloem_Lignin.csv"))
 write.csv(XuniqueBID, here("data/analysis/DE/unique_xylem_BioID.csv"))
 write.csv(XuniqueLig, here("data/analysis/DE/unique_xylem_Lignin.csv"))
+
+XuniqueBioID_S339 <- read_csv(here("data/analysis/DE/unique_xylem_BioID-S339.csv"))
+
+intersectXBioID <- intersect(XuniqueBID, XuniqueBioID_S339$x)
 #' # First Degree Neighbours of Genes of Interest
 #' Returns a dataframe of 1st degree neighbours
 #' from an edge list and a collection of genes.
