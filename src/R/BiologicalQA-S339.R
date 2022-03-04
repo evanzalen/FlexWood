@@ -1,5 +1,5 @@
 #' ---
-#' title: "FlexWood Biological QA"
+#' title: "FlexWood Biological QA, without sample S339"
 #' author: "Elena van Zalen"
 #' date: "`r Sys.Date()`"
 #' output:
@@ -57,7 +57,7 @@ samples <- readr::read_csv(here("doc/Samples.csv"),
 #' # It should then contain two columns, tab delimited, the first one with the transcript
 #' # IDs and the second one the corresponding
 #' ```
-tx2gene <- suppressMessages(read_delim(here("reference/annotation/tx2gene.tsv"),delim="\t",
+tx2gene <- suppressMessages(read_delim(here("reference/annotation/tx2gene.tsv.gz"),delim="\t",
                                  col_names=c("TXID","GENE")))
 
 #' # Raw data
@@ -111,7 +111,7 @@ sprintf("%s%% percent (%s) of %s genes are not expressed",
 dat <- tibble(x = colnames(counts), y = colSums(counts)) %>% 
   bind_cols(samples)
 
-ggplot(dat, aes(x, y, fill = samples$BioID)) + geom_col() + 
+ggplot(dat, aes(x, y, fill = samples$Flexure)) + geom_col() + 
   scale_y_continuous(name = "reads") +
   theme(axis.text.x = element_text(angle = 90, size = 4), axis.title.x = element_blank())
 
@@ -125,7 +125,7 @@ ggplot(data.frame(value = log10(rowMeans(counts))), aes(x = value)) +
   geom_density() + ggtitle("gene mean raw counts distribution") +
   scale_x_continuous(name = "mean raw counts (log10)")
 
-#' The same is done for the individual samples colored by CHANGEME. 
+#' The same is done for the individual samples. 
 #' ```{r CHANGEME6,eval=FALSE,echo=FALSE}
 #' # In the following, the second mutate also needs changing, I kept it 
 #' # as an example to illustrate the first line. SampleID would be 
@@ -135,8 +135,8 @@ ggplot(data.frame(value = log10(rowMeans(counts))), aes(x = value)) +
 #' # If you have more, add them as needed.
 #' ```
 dat <- as.data.frame(log10(counts)) %>% utils::stack() %>% 
-  mutate(Condition = samples$BioID[match(ind, samples$sampleID)]) %>% 
-  mutate(Tissue = samples$Tissue[match(ind, samples$sampleID)])
+  mutate(Condition = samples$Flexure[match(ind, samples$Name)]) %>% 
+  mutate(Tissue = samples$Tissue[match(ind, samples$Name)])
 
 ggplot(dat, aes(x = values, group = ind, col = Tissue)) + 
   geom_density() + ggtitle("sample raw counts distribution") +
@@ -160,7 +160,7 @@ write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-express
 dds <- DESeqDataSetFromMatrix(
   countData = counts,
   colData = samples,
-  design = ~ TW + BioID)
+  design = ~ TW + Flexure)
 colnames(dds) <- as.character(colData(dds)$Name)
 saveRDS(dds, file = here("data/analysis/salmon/dds-S339.rds"))
 save(dds, file = here("data/analysis/salmon/dds-S339.rda"))
@@ -199,7 +199,7 @@ nvar = 2
 #' ```{r CHANGEME8,eval=FALSE,echo=FALSE}
 #' This needs to be adapted to your study design. Add or drop variables as needed.
 #' ```
-nlevel = nlevels(dds$Tissue) * nlevels(dds$BioID) # 4 levels
+nlevel = nlevels(dds$Tissue) * nlevels(dds$Flexure) # 4 levels
 
 #' We plot the percentage explained by the different components, the
 #' red line represent the number of variable in the model, the orange line
@@ -224,14 +224,14 @@ scatterplot3d(pc$x[, 1],
               ylab = paste("Comp. 2 (", percent[2], "%)", sep = ""),
               zlab = paste("Comp. 3 (", percent[3], "%)", sep = ""),
               color = pal[as.integer(dds$Tissue)],
-              pch = c(17:19)[as.integer(dds$BioID)])
+              pch = c(17:19)[as.integer(dds$Flexure)])
 legend("topleft",
        fill = pal[1:nlevels(dds$Tissue)],
        legend = levels(dds$Tissue))
 
 legend("topright",
        pch = 17:19,
-       legend = levels(dds$BioID))
+       legend = levels(dds$Flexure))
 
 par(mar = mar)
 
@@ -240,7 +240,7 @@ pc.dat <- bind_cols(PC1 = pc$x[, 1],
                     PC2 = pc$x[, 2],
                     samples)
 
-p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = BioID, text = sampleID)) + 
+p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = Flexure, text = Name)) + 
   geom_point(size = 2) + 
   ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts")
 
@@ -253,7 +253,7 @@ ggplotly(p) %>%
 #' 
 #' Filter for noise
 #' 
-conds <- factor(paste(samples$BioID))
+conds <- factor(paste(samples$Flexure))
 sels <- rangeFeatureSelect(counts = vst,
                            conditions = conds,
                            nrep = 5)
@@ -261,20 +261,19 @@ vst.cutoff <- 2
 
 #' * Heatmap of "all" genes
 #' (Added different margins and turned the Col labels 45 degrees)
-#par(mar=c(7, 4, 4, 2)+0.1)
-#hm <- heatmap.2(t(scale(t(vst[sels[[vst.cutoff + 1]], ]))),
-#          distfun = pearson.dist,
-#          hclustfun = function(X){hclust(X, method = "ward.D2")},
-#          labRow = NA, trace = "none",
-#          labCol = conds,
-#          margins = c(12, 8),
-#          srtCol = 45,
-#          col = hpal)
+par(mar=c(7, 4, 4, 2)+0.1)
+hm <- heatmap.2(t(scale(t(vst[sels[[vst.cutoff + 1]], ]))),
+          distfun = pearson.dist,
+          hclustfun = function(X){hclust(X, method = "ward.D2")},
+          labRow = NA, trace = "none",
+          labCol = conds,
+          margins = c(12, 8),
+          srtCol = 45,
+          col = hpal)
 
-#plot(as.hclust(hm$colDendrogram), xlab = "", sub = "")
+plot(as.hclust(hm$colDendrogram), xlab = "", sub = "")
 
-#' ## Conclusion
-#' CHANGEME
+
 #' ```{r empty,eval=FALSE,echo=FALSE}
 #' ```
 #'

@@ -40,7 +40,7 @@ mar <- par("mar")
 #' # The csv file should contain the sample information, including the sequencing file name, 
 #' # any relevant identifier, and the metadata of importance to the study design
 #' # as columns, e.g. the SamplingTime for a time series experiment
-#'  ```
+#' ```
 samples <- readr::read_csv(here("doc/Samples.csv"),
                       col_types = cols(
                         col_character(),
@@ -57,8 +57,8 @@ samples <- readr::read_csv(here("doc/Samples.csv"),
 #' # It should then contain two columns, tab delimited, the first one with the transcript
 #' # IDs and the second one the corresponding
 #' ```
-tx2gene <- suppressMessages(read_delim(here("reference/annotation/tx2gene.tsv"),delim="\t",
-                                 col_names=c("TXID","GENE")))
+tx2gene <- suppressMessages(read_delim(here("reference/annotation/tx2gene.tsv.gz"), delim = "\t",
+                                 col_names = c("TXID", "GENE")))
 
 #' # Raw data
 filelist <- list.files(here("data/salmon"), 
@@ -72,7 +72,7 @@ filelist <- list.files(here("data/salmon"),
 #' # described in the samples object. If not, then they need to be sorted by making sure 
 #' they match to the order of the filelist. This was the case for this filelist so the first
 #' line orders the rows from the meta data accordingly.
-#' ````
+#' ```
 samples <- samples[match(sub("_sortmerna_trimmomatic", "", basename(dirname(filelist))),
                           samples$sampleID),]
 stopifnot(all(match(sub("_sortmerna_trimmomatic", "", basename(dirname(filelist))),
@@ -121,7 +121,7 @@ ggplot(data.frame(value = log10(rowMeans(counts))), aes(x = value)) +
   geom_density() + ggtitle("gene mean raw counts distribution") +
   scale_x_continuous(name = "mean raw counts (log10)")
 
-#' The same is done for the individual samples colored by CHANGEME. 
+#' The same is done for the individual samples. 
 #' ```{r CHANGEME6,eval=FALSE,echo=FALSE}
 #' # In the following, the second mutate also needs changing, I kept it 
 #' # as an example to illustrate the first line. SampleID would be 
@@ -131,16 +131,16 @@ ggplot(data.frame(value = log10(rowMeans(counts))), aes(x = value)) +
 #' # If you have more, add them as needed.
 #' ```
 dat <- as.data.frame(log10(counts)) %>% utils::stack() %>% 
-  mutate(Flexure = samples$Flexure[match(ind, samples$sampleID)]) %>% 
-  mutate(Tissue = samples$Tissue[match(ind, samples$sampleID)])
+  mutate(Flexure = samples$Flexure[match(ind, samples$Name)]) %>% 
+  mutate(Tissue = samples$Tissue[match(ind, samples$Name)])
 
 ggplot(dat, aes(x = values, group = ind, col = Tissue)) + 
   geom_density() + ggtitle("sample raw counts distribution") +
   scale_x_continuous(name ="per gene raw counts (log10)")
 
 #' ## Export
-dir.create(here("data/analysis/salmon"), showWarnings = FALSE, recursive = TRUE)
-write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-expression_data.csv"))
+#dir.create(here("data/analysis/salmon"), showWarnings = FALSE, recursive = TRUE)
+#write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-expression_data.csv"))
 
 #' # Data normalisation 
 #' ## Preparation
@@ -158,11 +158,11 @@ dds <- DESeqDataSetFromMatrix(
   colData = samples,
   design = ~ TW + Flexure)
 colnames(dds) <- as.character(colData(dds)$Name)
-saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
-save(dds, file = here("data/analysis/salmon/dds.rda"))
+#saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
+#save(dds, file = here("data/analysis/salmon/dds.rda"))
 
 #' Check the size factors (_i.e._ the sequencing library size effect)
-#' 
+
 dds <- estimateSizeFactors(dds)
 sizes <- sizeFactors(dds)
 pander(sizes)
@@ -172,13 +172,12 @@ boxplot(sizes, main = "Sequencing libraries size factor")
 vsd <- varianceStabilizingTransformation(dds, blind = TRUE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
-saveRDS(vst, file = here("data/analysis/salmon/vst.rds"))
-write.csv(vst, file = here("data/analysis/salmon/normalised-gene-expression_data_with S339.csv"))
+#saveRDS(vst, file = here("data/analysis/salmon/vst.rds"))
+#write.csv(vst, file = here("data/analysis/salmon/normalised-gene-expression_data_with S339.csv"))
 
 #' * Validation
 #' 
 #' The variance stabilisation worked adequately
-#' 
 meanSdPlot(vst[rowSums(vst) > 0, ])
 
 #' ## QC on the normalised data
@@ -236,10 +235,9 @@ pc.dat <- bind_cols(PC1 = pc$x[, 1],
                     PC2 = pc$x[, 2],
                     samples)
 
-p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = Flexure, text = sampleID)) + 
+p <- ggplot(pc.dat, aes(x = PC1, y = PC2, col = Tissue, shape = Flexure, text = Name)) + 
   geom_point(size = 2) + 
-  ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts") #+
-  #ggtext check
+  ggtitle("Principal Component Analysis", subtitle = "variance stabilized counts")
 
 ggplotly(p) %>% 
   layout(xaxis = list(title = paste("PC1 (", percent[1], "%)", sep = "")),
@@ -252,26 +250,26 @@ ggplotly(p) %>%
 #' 
 conds <- factor(paste(samples$Flexure))
 sels <- rangeFeatureSelect(counts = vst,
-                           Flexures = conds,
+                           conditions = conds,
                            nrep = 5)
 vst.cutoff <- 2
 
 #' * Heatmap of "all" genes
+#' Not all genes would fit in the plot so this plot only contains a small part of the entire data.
 #' (Added different margins and turned the Col labels 45 degrees)
-#par(mar=c(7, 4, 4, 2)+0.1)
-#hm <- heatmap.2(t(scale(t(vst[sels[[vst.cutoff + 1]], ]))),
-#          distfun = pearson.dist,
-#          hclustfun = function(X){hclust(X, method = "ward.D2")},
-#          labRow = NA, trace = "none",
-#          labCol = conds,
-#          margins = c(12, 8),
-#          srtCol = 45,
-#          col = hpal)
+par(mar = c(7, 4, 4, 2) + 0.1)
+hm <- heatmap.2(t(scale(t(vst[sels[[vst.cutoff + 1]], ]))),
+          distfun = pearson.dist,
+          hclustfun = function(X){hclust(X, method = "ward.D2")},
+          labRow = NA, trace = "none",
+          labCol = conds,
+          margins = c(12, 8),
+          srtCol = 45,
+          col = hpal)
 
-#plot(as.hclust(hm$colDendrogram), xlab = "", sub = "")
+plot(as.hclust(hm$colDendrogram), xlab = "", sub = "")
 
-#' ## Conclusion
-#' CHANGEME
+
 #' ```{r empty,eval=FALSE,echo=FALSE}
 #' ```
 #'
