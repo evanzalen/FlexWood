@@ -160,7 +160,7 @@ write.csv(counts, file = here("data/analysis/salmon/raw-unormalised-gene-express
 dds <- DESeqDataSetFromMatrix(
   countData = counts,
   colData = samples,
-  design = ~ TW + Flexure)
+  design = ~ Flexure)
 colnames(dds) <- as.character(colData(dds)$Name)
 saveRDS(dds, file = here("data/analysis/salmon/dds-S339.rds"))
 save(dds, file = here("data/analysis/salmon/dds-S339.rda"))

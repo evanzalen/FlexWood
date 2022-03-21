@@ -156,10 +156,10 @@ ggplot(dat, aes(x = values, group = ind, col = Tissue)) +
 dds <- DESeqDataSetFromMatrix(
   countData = counts,
   colData = samples,
-  design = ~ TW + Flexure)
+  design = ~ Flexure)
 colnames(dds) <- as.character(colData(dds)$Name)
-#saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
-#save(dds, file = here("data/analysis/salmon/dds.rda"))
+saveRDS(dds, file = here("data/analysis/salmon/dds.rds"))
+save(dds, file = here("data/analysis/salmon/dds.rda"))
 
 #' Check the size factors (_i.e._ the sequencing library size effect)
 
@@ -172,8 +172,8 @@ boxplot(sizes, main = "Sequencing libraries size factor")
 vsd <- varianceStabilizingTransformation(dds, blind = TRUE)
 vst <- assay(vsd)
 vst <- vst - min(vst)
-#saveRDS(vst, file = here("data/analysis/salmon/vst.rds"))
-#write.csv(vst, file = here("data/analysis/salmon/normalised-gene-expression_data_with S339.csv"))
+saveRDS(vst, file = here("data/analysis/salmon/vst.rds"))
+write.csv(vst, file = here("data/analysis/salmon/normalised-gene-expression_data_with S339.csv"))
 
 #' * Validation
 #' 
