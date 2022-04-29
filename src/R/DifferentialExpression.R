@@ -12,19 +12,20 @@
 
 #' * Libraries
 suppressPackageStartupMessages({
-    library(data.table)
-    library(DESeq2)
-    library(dplyr)
-    library(gplots)
-    library(here)
-    library(hyperSpec)
-    library(RColorBrewer)
-    library(tidyverse)
-    library(VennDiagram)
+  library(data.table)
+  library(DESeq2)
+  library(dplyr)
+  library(gplots)
+  library(here)
+  library(hyperSpec)
+  library(jsonlite)
+  library(magrittr)
+  library(pheatmap)
+  library(RColorBrewer)
+  library(tidyverse)
+  library(VennDiagram)
 })
 
-
-dfnew <- df[,1:604]
 
 #' * Helper files
 suppressMessages({
@@ -38,9 +39,6 @@ suppressMessages({
 pal = brewer.pal(8, "Dark2")
 hpal <- colorRampPalette(c("blue", "white", "red"))(100)
 mar <- par("mar")
-
-#' TODO remember to add a function to check for correlation between logFC and 
-#' transcript length - check for the effective length
 
 #' * Functions
 #' 1. plot specific gene expression
@@ -71,7 +69,7 @@ mar <- par("mar")
 "extract_results" <- function(dds,vst,contrast,
                               padj=0.01,lfc=0.5,
                               plot=TRUE,verbose=TRUE,
-                              export=TRUE,default_dir=here("data/analysis/DE"),
+                              export=TRUE,default_dir=here(),
                               default_prefix="DE-",
                               annot = tibble(),
                               labels=dds$Name,
@@ -116,7 +114,7 @@ mar <- par("mar")
     
     max.theta <- metadata(res)$filterNumRej[which.max(metadata(res)$filterNumRej$numRej),"theta"]
     message(sprintf("The independent filtering maximises for %s %% of the data, corresponding to a base mean expression of %s (library-size normalised read)",
-                    round(max.theta*100,digits=5),
+                    round(max.theta*100, digits=5),
                     round(quantile(counts(dds, normalized = TRUE), probs = max.theta), digits = 5)))
   }
   
@@ -270,13 +268,72 @@ extractEnrichmentResults <- function(enrichment,task="go",
         }
     }
 }
+#' 4. extract enrichment results from DEGs clusters determined by pheatmap and plotting each cluster in a separate heatmap.
+enrich_heatmap_clusters <- function(nclust, datasetname, gene_mat, ann_ribbon, ann_colour, col_gaps, gopher_url, background){
+  
+  # plotting a heatmap per cluster with kmeans
+  message("Plotting kmeans heatmap")
+  kphmap <- pheatmap(gene_mat,
+                     main = datasetname,
+                     cluster_rows = TRUE, cluster_cols = FALSE,
+                     clustering_distance_rows = "correlation", clustering_method = "ward.D2",
+                     col = hpal, fontsize_row = 7, fontsize_col = 7, angle_col = 90,
+                     show_rownames = TRUE, show_colnames = TRUE,
+                     annotation_col = ann_ribbon, annotation_colors = ann_colour,
+                     gaps_col = col_gaps, kmeans_k = nclust,
+                     filename = here("results-Norwood/Phloem", paste0("Kmeans_Heatmap_", datasetname, ".png"))
+  )
+  
+  # defining the clusters by the predetermined nr of clusters from a pheatmap from the entire set of DEGs
+  ct <- kphmap$kmeans$cluster
+  # For Aspwood, write this in a dataframe:
+  #write_csv(enframe(kphmap$kmeans$cluster, name = "PotraID", value = "Cluster"), file = here("results-Aspwood", paste0("Dataframe_", datasetname, ".csv")))
+  # apply the following to each one of these clusters
+  return(sapply(1:nclust, 
+                function(i, ct, gene_mat, ann_ribbon, ann_colour, col_gaps, gopher_url, background){
+                  
+                  cl = names(ct)[ct == i]
+                  
+                  # plotting a heatmap per cluster
+                  message(paste0("Plotting heatmap for cluster ", i))
+                  phmap <- pheatmap(gene_mat[cl,],
+                                    main = paste0("Cluster ", i, " ", datasetname),
+                                    cluster_rows = TRUE, cluster_cols = FALSE,
+                                    clustering_distance_rows = "correlation", clustering_method = "ward.D2",
+                                    col = hpal, fontsize_row = 7, fontsize_col = 7, angle_col = 90,
+                                    show_rownames = TRUE, show_colnames = TRUE,
+                                    annotation_col = ann_ribbon, annotation_colors = ann_colour,
+                                    gaps_col = col_gaps,
+                                    filename = here("results-Norwood/Phloem", paste0("Heatmap_Cluster_", i, "_", datasetname, ".png"))
+                  )
+                  # enrichment of clusters
+                  message(paste0("Enriching cluster ", i))
+                  enr <- gopher(cl,
+                                task = list("go","kegg", "pfam"),
+                                background = background,
+                                url = gopher_url)
+                  if (length(rownames(enr$go)) > 0) {
+                    enr$go <- enr$go[,c("name","padj")] %>% mutate(type = "GO")
+                    
+                  }
+                  if (length(rownames(enr$kegg)) > 0) {
+                    enr$kegg <- enr$kegg[,c("name","padj")] %>% mutate(type = "KEGG")
+                    
+                  }
+                  if (length(rownames(enr$pfam)) > 0) {
+                    enr$pfam <- enr$pfam[,c("name","padj")] %>% mutate(type = "PFAM")
+                    enr$pfam$name <- gsub("\\.", " ", enr$pfam$name)
+                    
+                  }
+                  message("Writing enrichments into file")
+                  write_csv(reduce(enr, bind_rows), file = here("results-Norwood/Phloem", paste0("Enrichment_Cluster_", i, "_", datasetname, ".csv")))
+                  
+                }, ct, gene_mat, ann_ribbon, ann_colour, col_gaps, gopher_url, background) 
+  )}
+
 
 #' * Data
-#' ```{r load, echo=FALSE,eval=FALSE}
-#' CHANGEME - here you are meant to load an RData object
-#' that contains a DESeqDataSet object. If you ran the 
-#' biological QA template, you need not change anything
-#' ```
+#' Loading dds with design = ~Flexure.
 load(here("data/analysis/salmon/dds.rda"))
 
 #' ## Normalisation for visualisation
@@ -297,18 +354,11 @@ Potra_blast2go <- read_tsv(PotraV2Annotation_file,
   select("ID", matches("Annotation|Enzyme|InterPro"))
 
 #' ## Gene of interests
-#' ```{r goi, echo=FALSE,eval=FALSE}
-#' CHANGEME - Here, you can plot the expression pattern of your gene of
-#' interest. You need to have a list of genes in a text file, one geneID per line
-#' The ID should exist in your vst data.
-#' Note that for the plot to work, you also need to edit the first function (`line_plot`)
-#' at the top of this file
-#' ```
-#goi <- read_lines(here("doc/goi.txt"))
-#stopifnot(all(goi %in% rownames(vst)))
-#dev.null <- lapply(goi,line_plot,dds=dds,vst=vst)
-
+#' Analysing the tissue types separately.
+#' 
 #' ## Differential Expression
+#' Model for the dds object was carried over from the BiologicalQA.R script.
+#' Model: ~Flexure
 dds <- DESeq(dds)
 
 #' * Dispersion estimation
@@ -319,35 +369,9 @@ plotDispEsts(dds)
 resultsNames(dds)
 
 #' ## Results
-#' #' ```{r res, echo=FALSE,eval=FALSE}
-#' CHANGEME - here you need to define the contrast you want to 
-#' study - see the example in the next block. 
-#' 
-#' The `contrast` can be given
-#' by name, as a list (numerator/denominator) or as a vector of weight (e.g. c(0,1));
-#' read the DESeq2 vignette for more info
-#' 
-#' The `label` argument is typically one (or a combination) of the metadata stored in colData
-#' 
-#' The function allows for looking at the independent filtering results using `debug=TRUE`
-#' 
-#' If you are not satisfied with the default from DESeq2, you can set your own cutoff using `expression_cutoff`
-#' 
-#' You can change the default output file prefix using `default_prefix`
-#' 
-#' You can select the set of samples to be added to the `heatmap`, using the `sample_sel` argument. It takes a logical vector.
-#' 
-#' ```
-
-#' ```{r contrast, echo=FALSE,eval=FALSE}
-contrast1L <- extract_results(dds = dds, vst = vst, contrast = "BioID_T89_ROT_vs_T89_STA")
-contrast2L <- extract_results(dds = dds, vst = vst, contrast = "TW_no_vs_yes")
-#' ```
-
-#' ```
 #' The tissue type still has a too big effect on the DESeq to distinguish what exactly are the DE genes when only focusing on ROT and STA.
 #' Therefore we rerun the dds on the tissue specific data separately to take away the effect the tissue type has.
-#' ```
+
 ddsp <- dds[, dds$Tissue == "Phloem"]
 ddsx <- dds[, dds$Tissue == "Xylem"]
 
@@ -372,251 +396,274 @@ plotDispEsts(ddsx)
 resultsNames(ddsp)
 resultsNames(ddsx)
 
-contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "BioID_T89_ROT_vs_T89_STA", annot = Potra_blast2go)
-contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "BioID_T89_ROT_vs_T89_STA", annot = Potra_blast2go)
-
-contrast2pL <- extract_results(dds = ddsp, vst = vstp, contrast = "TW_no_vs_yes", annot = Potra_blast2go)
-contrast2xL <- extract_results(dds = ddsx, vst = vstx, contrast = "TW_no_vs_yes", annot = Potra_blast2go)
+#' Getting the contrast results per tissue type and annotating each gene with our blast2go file.
+#' The results are automatically stored in a "DE-genes.csv" file in the default directory here("data/analysis/DE")
+#' specified in the second function coded at the beginning of this script.
+contrast1pL <- extract_results(dds = ddsp, vst = vstp, contrast = "Flexure_T89_ROT_vs_T89_STA", 
+                               annot = Potra_blast2go, default_dir = here(), default_prefix = "export/phloem_DEGs_")
+contrast1xL <- extract_results(dds = ddsx, vst = vstx, contrast = "Flexure_T89_ROT_vs_T89_STA", 
+                               annot = Potra_blast2go, default_dir = here(), default_prefix = "export/xylem_DEGs_")
 
 #' ### Venn Diagram
-#' ```{r venn, echo = FALSE, eval = FALSE}
-#' CHANGEME - Here, you typically would have run several contrasts and you want
-#' to assess their overlap plotting VennDiagrams.
-#' 
-#' In the examples below, we assume that these results have been saved in a list
-#' called `res.list`
-#' ```
-res.list <- list(c(contrast1p, contrast1x))
-
-#' ```{r venn2, echo=FALSE,eval=FALSE}
+#' Assessing overlap of DEGs between tissues.
+#' 32 genes overlap between the two different tissue types.
 grid.newpage()
-grid.draw(draw.pairwise.venn(area1 = length(contrast1pL$all), area2 = length(contrast2pL$all),
-                             cross.area = length(intersect(contrast1pL$all, contrast2pL$all)), category = c("BioID", "Lignin"),
-                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(45, 225), euler.d = TRUE, sep.dist = 0.09,
+grid.draw(draw.pairwise.venn(area1 = length(contrast1pL$all), area2 = length(contrast1xL$all),
+                             cross.area = length(intersect(contrast1pL$all, contrast1xL$all)), category = c("Phloem", "Xylem"),
+                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(110, 310), euler.d = TRUE, sep.dist = 0.09,
                              rotation.degree = 45, filename = NULL
 ))
 
-grid.newpage()
-grid.draw(draw.pairwise.venn(area1 = length(contrast1xL$all), area2 = length(contrast2xL$all),
-                             cross.area = length(intersect(contrast2pL$all, contrast2xL$all)), category = c("BioID", "Lignin"),
-                             fill = c("#6baed6", "#fd8d3c"), cat.pos = c(45, 225), euler.d = TRUE, sep.dist = 0.09,
-                             rotation.degree = 45, filename = NULL
-))
+#grid.draw(venn.diagram(list(phloem = contrast1pL$all, xylem = contrast1xL$all), filename = NULL, fill = pal[1:2]))
+
+#' ## Analysis of tissue type DEGs in Aspwood network.
+#' First we enrich each set of DEGs. Then we extract the expression values for these two lists of genes from the Aspwood network
+#' and plot the heatmaps. Thereafter we cluster the genes based on the heatmap expression pattern and enrich each cluster.
+#' Then we do the same for the Norwood orthologues of the genes.
 #' ```
-
-#' ## Analysis in aspect of a Network
+#' Setting up Gopher and using the Aspwood network as background (bg). 
+#' Loading the bg might take a while because it's a big file.
+#' Running Gopher takes a minute or 2 as well, depending on how big the DEG list is.
 #' ```
-#' Now we load in the Aspwood network to see where our DE genes are located and what genes are connected to them.
-#' 
-#' 
-#' ```
-aspwood_file <- "ftp://anonymous@plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/Expression/Network/network_seidr.txt"
-aspwood <- read_tsv(aspwood_file,
-              col_names = c("dataset", "Source", "Target", "direction", "x1", "x2", "irp"),
-               col_types = NULL, show_col_types = FALSE)
-as.factor(aspwood$dataset)
+#' Enriching the tissue specific DEGs.
+aspwood_expr <- read_delim("ftp://anonymous@plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/Expression/AspWood_tpm.txt", 
+                 delim = "\t")
 
-#' Lets look at the genes of interest (GOI) a little closer.
-commonDE_P <- intersect(contrast1pL$all, contrast2pL$all)
-commonDE_X <- intersect(contrast1xL$all, contrast2xL$all)
+#' Visualising expression values of tissue specific DEGs using the expression values from the Aspwood network in a heatmap.
+#' We transform the Aspwood expression file into a matrix with genes as rownames and the samples as column names, 
+#' using the tpm as values. The original K9 samples were removed from the matrix to keep consistency with publications.
+#' K5 was renamed to K4
+aspwood_matrix <- as.matrix(pivot_wider(aspwood_expr,names_from = sample_name, values_from = expression) %>% 
+                              column_to_rownames(var = "gene_id"))
+colnames(aspwood_matrix) <- gsub("-.*-", "-", colnames(aspwood_matrix))
 
-PuniqueBID <- setdiff(contrast1pL$all, commonDE_P) # Unique Phloem genes for BioID
-XuniqueBID <- setdiff(contrast1xL$all, commonDE_X) # Unique Xylem genes for BioID
-PuniqueLig <- setdiff(contrast2pL$all, commonDE_P) # Unique Phloem genes for Lignin
-XuniqueLig <- setdiff(contrast2xL$all, commonDE_X) # Unique Xylem genes for Lignin
+sds <- rowSds(log1p(aspwood_matrix))
+plot(density(sds))
+abline(v=0.15,lty=2,col="grey")
 
-vst_comP <- vstp[rownames(vstp) %in% commonDE_P,]
-vst_comX <- vstx[rownames(vstx) %in% commonDE_X,]
+bg <- rownames(aspwood_matrix)[sds>0.15]
 
-vst_PBID <- vstp[rownames(vstp) %in% PuniqueBID,]
-vst_PLig <- vstp[rownames(vstp) %in% PuniqueLig,]
-vst_XBID <- vstx[rownames(vstx) %in% XuniqueBID,]
-vst_XLig <- vstx[rownames(vstx) %in% XuniqueLig,]
+#' Extracting the genes from the DEGs list that have expression in Aspwood.
+DEGphloem_Aspwood <- aspwood_matrix[bg[bg %in% contrast1pL$all],]
+# 210 out of 222 DE phloem genes have expression in Aspwood
+DEGxylem_Aspwood <- aspwood_matrix[bg[bg %in% contrast1xL$all],] 
+# 354 out of 361 DE xylem genes have expression in Aspwood
 
-condsP <- factor(paste(ddsp$BioID, ddsp$Lignin))
-condsX <- factor(paste(ddsx$BioID, ddsx$Lignin))
+#' Running enrichment on the entire lists per tissue.
+enr_phloem <- gopher(rownames(DEGphloem_Aspwood),
+                     task = list("go", "kegg", "pfam"),
+                     background = bg, url = "potra2")
+enr_phloem[["go"]]
 
-selsp <- rangeFeatureSelect(counts = vstp[rownames(vstp) %in% PuniqueBID,],
-                           conditions = condsP,
-                           nrep = 5)
-selspL <- rangeFeatureSelect(counts = vstp[rownames(vstp) %in% PuniqueLig,],
-                            conditions = condsP,
-                            nrep = 5)
-
-selsx <- rangeFeatureSelect(counts = vstx[rownames(vstx) %in% XuniqueBID,],
-                            conditions = condsX,
-                            nrep = 5)
-selsxL <- rangeFeatureSelect(counts = vstx[rownames(vstx) %in% XuniqueLig,],
-                            conditions = condsX,
-                            nrep = 5)
-
-vst.cutoff <- 2
-
-par(mar=c(7, 4, 4, 2)+0.1)
-hm_PBID <- heatmap.2(t(scale(t(vst_PBID[selsp[[vst.cutoff + 1]], ]))),
-                 distfun = pearson.dist,
-                 hclustfun = function(X){hclust(X, method = "ward.D2")},
-                 labRow = NA, trace = "none",
-                 labCol = condsP,
-                 margins = c(12, 8),
-                 srtCol = 45,
-                 col = hpal)
-hmPLig <- heatmap.2(t(scale(t(vst_PLig[selspL[[vst.cutoff + 1]], ]))),
-                distfun = pearson.dist,
-                hclustfun = function(X){hclust(X, method = "ward.D2")},
-                labRow = NA, trace = "none",
-                labCol = condsP,
-                margins = c(12, 8),
-                srtCol = 45,
-                col = hpal)
-
-hmXBID <- heatmap.2(t(scale(t(vst_XBID[selsx[[vst.cutoff + 1]], ]))),
-                 distfun = pearson.dist,
-                 hclustfun = function(X){hclust(X, method = "ward.D2")},
-                 labRow = NA, trace = "none",
-                 labCol = condsX,
-                 margins = c(12, 8),
-                 srtCol = 45,
-                 col = hpal)
-hmXLig <- heatmap.2(t(scale(t(vst_XLig[selsxL[[vst.cutoff + 1]], ]))),
-                    distfun = pearson.dist,
-                    hclustfun = function(X){hclust(X, method = "ward.D2")},
-                    labRow = NA, trace = "none",
-                    labCol = condsX,
-                    margins = c(12, 8),
-                    srtCol = 45,
-                    col = hpal)
-
-#' Are the genes within the Aspwood network?
-GOI <- commonDE %in% aspwood$gene
-
-table(PuniqueBID %in% bg)
-table(PuniqueLig %in% bg)
-table(XuniqueBID %in% bg)
-table(XuniqueLig %in% bg)
-
-#' TODO
-#' - get FDN of 32 genes - need edgelist for this
-#' - create heatmap of common and 2 unique genesets
-#' - enrich the genes  
-
-#' ## Enriching the genes
-#' Setting up Gofer
-source("~/Git/UPSCb-common/src/R/gopher.R")
-suppressPackageStartupMessages(library(jsonlite))
-bg <- rownames(vst)
-
-#' Running the enrichments
-enr_commonDE_P <- gopher(commonDE_P,
-                       task = list("go", "kegg", "pfam"),
-                       background = bg, url = "potra2")
-enr_commonDE_FDN <- gopher(commonDE_FDN,
-                       task = list("go", "kegg", "pfam"),
-                       background = bg, url = "potra2")
-
-enr_PuniqueBID <- gopher(PuniqueBID,
-                    task = list("go"),
+enr_xylem <- gopher(rownames(DEGxylem_Aspwood),
+                    task = list("go", "kegg", "pfam"),
                     background = bg, url = "potra2")
-enr_PuniqueLig <- gopher(PuniqueLig,
-                     task = list("go"),
-                     background = bg, url = "potra2")
-write.csv(enr_PuniqueBID[["go"]], here("data/analysis/DE/GO_DE_phloem_BioID.csv"))
-write.csv(enr_PuniqueLig[["go"]], here("data/analysis/DE/GO_DE_phloem_Lignin.csv"))
+enr_xylem[["go"]]
 
-enr_XuniqueBID <- gopher(XuniqueBID,
-                     task = list("go"),
-                     background = bg, url = "potra2")
-enr_XuniqueLig <- gopher(XuniqueLig,
-                     task = list("go"),
-                     background = bg, url = "potra2")
-write.csv(enr_XuniqueBID[["go"]], here("data/analysis/DE/GO_DE_xylem_BioID.csv"))
-write.csv(enr_XuniqueLig[["go"]], here("data/analysis/DE/GO_DE_xylem_Lignin.csv"))
 
-#' Getting the annotation for the DE genes itself.
-PotraV2Annotation_file <- "ftp://plantgenie.org/Data/PopGenIE/Populus_tremula/v2.2/annotation/blast2go/Potra22_blast2go_GO_export.txt"
-Potra_blast2go <- read_tsv(PotraV2Annotation_file, 
-                    col_names = TRUE,
-                    col_types = NULL, show_col_types = FALSE)[, c("Sequence Name", "Annotation GO Count", "Annotation GO ID", "Annotation GO Term", "Annotation GO Category")]
-Potra_blast2go$`Sequence Name` <- gsub("\\.\\d+", "", Potra_blast2go$`Sequence Name`)
-AnnotPBID <- XuniqueBID %in% Potra_blast2go$`Sequence Name`
+#' Getting the labeling of Aspwood cell type to create a ribbon for the heatmap. 
+#' Obtained from the supplementary figures from the Aspwood paper.
+ribbon <- read.table(here("doc/Aspwood_ribbon.txt"),
+                     header = FALSE,
+                     sep = "\t",
+                     col.names = c("","CellType"),
+                     row.names = 1)
+ann_colours <- list(
+  CellType = c(Phloem = "#99CC33", Cambium = "#FF9900", "Expanding xylem" = "#3399CC", "Lignified xylem" = "#993300"))
 
-write.csv(PuniqueBID, here("data/analysis/DE/unique_phloem_BioID.csv"))
-write.csv(PuniqueLig, here("data/analysis/DE/unique_phloem_Lignin.csv"))
-write.csv(XuniqueBID, here("data/analysis/DE/unique_xylem_BioID.csv"))
-write.csv(XuniqueLig, here("data/analysis/DE/unique_xylem_Lignin.csv"))
+#'Plotting the obtained expression values in a heatmap.
+genelistscalep <- t(scale(t(DEGphloem_Aspwood)))
+genelistscalep[genelistscalep > 2] <- 2
+genelistscalep[genelistscalep < -2] <- -2
 
-XuniqueBioID_S339 <- read_csv(here("data/analysis/DE/unique_xylem_BioID-S339.csv"))
+phm_p <- pheatmap(genelistscalep,
+                  cluster_rows = TRUE,
+                  cluster_cols = FALSE,
+                  clustering_distance_rows = "correlation",
+                  clustering_method = "ward.D2",
+                  col = hpal,
+                  fontsize_col = 7,
+                  angle_col = 90,
+                  show_rownames = FALSE,
+                  show_colnames = TRUE,
+                  annotation_col = ribbon,
+                  annotation_colors = ann_colours,
+                  cutree_rows = 10,
+                  gaps_col = c(25,51,79))
 
-intersectXBioID <- intersect(XuniqueBID, XuniqueBioID_S339$x)
-#' # First Degree Neighbours of Genes of Interest
-#' Returns a dataframe of 1st degree neighbours
-#' from an edge list and a collection of genes.
-#' It assumes an undirected network.
-#'
-#' @param edgeList data frame with at least 2 columns
-#' 1 with source genes and 1 with target genes. the order
-#' is not important
-#' @param genes a vector of the genes of interest to look for
-#'
-#' @return data frame with 2 columns, FDN (first degree neighbours)
-#' and GOI (gene of interest)
-#'
-#' @examples t <- getFDN(edgeList, "MA_104203g0010")
-#' write.table(t, file="myFile.tsv", sep='\t', row.names = F, quote = F)
-getFDN <- function(edgelist, genes)
-{
+genelistscalex <- t(scale(t(DEGxylem_Aspwood)))
+genelistscalex[genelistscalex > 2] <- 2
+genelistscalex[genelistscalex < -2] <- -2
+phm_x <- pheatmap(genelistscalex,
+                  cluster_rows = TRUE,
+                  cluster_cols = FALSE,
+                  clustering_distance_rows = "correlation",
+                  clustering_method = "ward.D2",
+                  col = hpal,
+                  fontsize_col = 7,
+                  angle_col = 90,
+                  show_rownames = FALSE,
+                  show_colnames = TRUE,
+                  annotation_col = ribbon,
+                  annotation_colors = ann_colours,
+                  cutree_rows = 10,
+                  gaps_col = c(25,51,79))
+
+
+
+#' Taking clusters from the heatmap with the cutree function to enrich each cluster of genes individually.
+#' For the phloem gene set we needed to take one cluster separately for another cut without getting too many mini clusters.
+#' We're taking "p.sel" as input to plot and enrich the bigger cluster, which will be split in two, and we're
+#' taking "p.sel_rest" to plot and enrich the remaining smaller clusters. 
+ctp <- cutree(phm_p$tree_row, k=10)
+ctp.sel <- ctp == which.max(elementNROWS(split(names(ctp),ctp)))
+p.sel <- genelistscalep[names(ctp)[ctp.sel == "TRUE"],]
+p.sel_rest <- genelistscalep[names(ctp)[ctp.sel == "FALSE"],]
+
+
+#' Running the enrichments per heatmap cluster.
+#' The function can be found at the top of this script listed as function nr. 4. We use the results and inputs from the preliminary 
+#' heatmap as arguments for this function. Any time this function is run the cluster nr is assigned randomly, 
+#' so it might be that you will obtain different names for the clusters. This is just how the cutree command works. 
+#' The only way we found around this is to plot the kmeans heatmap and use those cluster names to directly enrich and plot 
+#' the individual clusters. All results are stored in one folder under "results-Aspwood" for phloem and for xylem respectively.
+Enr_phloem_clusters_big <- enrich_heatmap_clusters(nclust = 2, datasetname = "Aspwood_Phloem_bigCluster", gene_mat = p.sel, 
+                                              ann_ribbon = ribbon, ann_colour = ann_colours,
+                                              col_gaps = c(25,51,79), gopher_url = "potra2", background = bg)
+Enr_phloem_clusters_rest <- enrich_heatmap_clusters(nclust = 9, datasetname = "Aspwood_Phloem_restClusters", gene_mat = p.sel_rest, 
+                                                   ann_ribbon = ribbon, ann_colour = ann_colours,
+                                                   col_gaps = c(25,51,79), gopher_url = "potra2", background = bg)
+
+
+#' Luckily for xylem we did not need to do an extra split and we could run everything at once without having to change the number of clusters.
+Enr_xylem_clusters <- enrich_heatmap_clusters(nclust = 10, datasetname = "Aspwood_Xylem", gene_mat = genelistscalex, 
+                                              ann_ribbon = ribbon, ann_colour = ann_colours,
+                                              col_gaps = c(25,51,79), gopher_url = "potra2", background = bg)
+
+
   
-  res <- lapply(genes, function(gene){
-    s2t <- edgelist[edgelist[1] == gene,][2]
-    t2s <- edgelist[edgelist[2] == gene,][1]
-    union(s2t,t2s)
-  })
-  names(res) <- genes
-  res <- setNames(unlist(res, use.names=F),rep(names(res), lengths(res)))
-  myRes <- data.frame(FDN = res, GOI = names(res))
-}
+#' ## Analysis of DEGs in Picea abies 
+#' Obtaining Picea abies orthologues for the DEGs with the best Diamond hits.
+potra_piabi_diamond_file <- "ftp://anonymous@plantgenie.org/Data/Cross-Species/Orthologs/BEST_DIAMOND/potra_piabi_best_diamond.tsv"
+potra_piabi_diamond <- read_tsv(potra_piabi_diamond_file,
+                                col_names = c("Potra", "Piabi"))
+
+table(potra_piabi_diamond$Potra %in% row.names(DEGphloem_Aspwood)) 
+#190 out of 210 genes have an orthologue for the phloem DEGs
+table(potra_piabi_diamond$Potra %in% row.names(DEGxylem_Aspwood)) 
+#317 out of 354 genes have an orthologue for the xylem DEGs
+
+DEGphloem_spruceOrtho <- potra_piabi_diamond$Piabi[potra_piabi_diamond$Potra %in% row.names(DEGphloem_Aspwood)]
+DEGxylem_spruceOrtho <- potra_piabi_diamond$Piabi[potra_piabi_diamond$Potra %in% row.names(DEGxylem_Aspwood)]
+
+#' Getting Norwood expression values for the selected gene lists. We removed the Late Wood samples because there is no 
+#' equivalent to it in Populus tremula.
+norwood_expr <- read_delim("ftp://anonymous@plantgenie.org/Data/ConGenIE/Picea_abies/v1.0/Expression/Network/expression_norwood.txt",
+                           delim = "\t")[,-4]
+
+norwood_matrix <- as.matrix(pivot_wider(norwood_expr, names_from = sample, values_from = log2) %>% 
+                                                column_to_rownames(var = "id") %>%
+                              dplyr::select(-c("T1-20", "T2-18", "T3-20")))
+norwood_matrix <- norwood_matrix[, order(colnames(norwood_matrix))]
+
+#' Filtering the background 
+sdsNW <- rowSds(log1p(norwood_matrix))
+plot(density(sdsNW))
+abline(v=0.21,lty=2,col="grey")
+
+bgNW <- rownames(norwood_matrix)[sdsNW > 0.21]
+
+#' Calculating the heatmaps with the Norwood expression values.
+#' For phloem only 48 out of the 190 spruce orthologs are in the Norwood network, 
+#' for xylem this was 89 out of 317 genes. 
+DEGphloem_Norwood <- norwood_matrix[bgNW[bgNW %in% DEGphloem_spruceOrtho],]
+# we have 48 
+DEGxylem_Norwood <- norwood_matrix[bgNW[bgNW %in% DEGxylem_spruceOrtho],]
+# we have 89
+
+#' The code above that enriches each cluster individually, also outputs a dataframe with the PotraIDs and their respective cluster number. 
+#' We will use this dataframe to create an overview with the Potra DEGs, their respective heatmap clusters, 
+#' their Picea abies orthologue and whether or not this orthologue is expressed in Norwood. 
+#' First we will have to rename the clusters from the bigger cluster so that its name doesn't overlap with 
+#' the two clusters "1" and "2" from the smaller cluster list. Big cluster "1" will be renamed "10" and cluster "2" will be renamed "11".
+#' Keep in mind that the cluster name in the plots will still be 1 or 2.
+Aspwood_dataframe_phloem <- read_csv(here("results-Aspwood/Phloem/Dataframe_Aspwood_Phloem_bigCluster.csv")) %>% 
+  mutate(Cluster = replace(Cluster, Cluster == "1", "10")) %>% 
+  mutate(Cluster = replace(Cluster, Cluster == "2", "11")) %>% 
+  rbind(read_csv(here("results-Aspwood/Phloem/Dataframe_Aspwood_Phloem_restClusters.csv"))) %>% 
+  arrange(Cluster)%>% 
+  left_join(potra_piabi_diamond, by = c("PotraID" = "Potra")) %>% 
+  mutate("ExpressionNorwood" = Piabi %in% bgNW) %>% 
+  write_csv(file = here("results-Aspwood/Phloem/Dataframe_Aspwood_Phloem.csv"))
+
+Aspwood_dataframe_xylem <- read_csv(here("results-Aspwood/Xylem/Dataframe_Aspwood_Xylem.csv")) %>% 
+  arrange(Cluster) %>% 
+  left_join(potra_piabi_diamond, by = c("PotraID" = "Potra")) %>% 
+  mutate("ExpressionNorwood" = Piabi %in% bgNW) %>% 
+  write_csv(file = here("results-Aspwood/Xylem/Dataframe_Aspwood_Xylem.csv"))
+
+#' ## Analysis of DE Norwood orthologues
+#' Setting up the ribbon for the Norwood heatmaps.
+#' SCW = Secondary Cell Wall
+#' PCD = Programmed Cell Death
+ribbonNW <- read.table(here("doc/Norwood_ribbon.txt"),
+                       header = FALSE,
+                       sep = "\t",
+                       col.names = c("","CellType"),
+                       row.names = 1)
+ann_coloursNW <- list(
+  CellType = c("Cambium" = "#3399CC", "Expanding Xylem"= "#993300", "SCW" = "#993300", "PCD" = "#996600"))
+
+#' The samples in Norwood don't look too well structured, so we decided on a cut-off of 8 clusters with cutree_rows = 8.
+#' This number can be changed to adjust the clusters to liking. 
+#' The code that follows after can be run without any changes to adapt for the different clustering.
+genelistscale.nwp <- t(scale(t(DEGphloem_Norwood)))
+genelistscale.nwp[genelistscale.nwp > 2] <- 2
+genelistscale.nwp[genelistscale.nwp < -2] <- -2
+phm_nwp <- pheatmap(genelistscale.nwp,
+                  cluster_rows = TRUE,
+                  cluster_cols = FALSE,
+                  clustering_distance_rows = "correlation",
+                  clustering_method = "ward.D2",
+                  col = hpal,
+                  fontsize_col = 7,
+                  angle_col = 90,
+                  show_rownames = FALSE,
+                  show_colnames = TRUE,
+                  annotation_col = ribbonNW,
+                  annotation_colors = ann_coloursNW,
+                  cutree_rows = 8,
+                  gaps_col = c(17,32))
+
+genelistscale.nwx <- t(scale(t(DEGxylem_Norwood)))
+genelistscale.nwx[genelistscale.nwx > 2] <- 2
+genelistscale.nwx[genelistscale.nwx < -2] <- -2
+phm_nwx <- pheatmap(genelistscale.nwx,
+                    cluster_rows = TRUE,
+                    cluster_cols = FALSE,
+                    clustering_distance_rows = "correlation",
+                    clustering_method = "ward.D2",
+                    col = hpal,
+                    fontsize_col = 7,
+                    angle_col = 90,
+                    show_rownames = FALSE,
+                    show_colnames = TRUE,
+                    annotation_col = ribbonNW,
+                    annotation_colors = ann_coloursNW,
+                    cutree_rows = 8,
+                    gaps_col = c(17,32),filename = "results/Heatmap_Norwood_Xylem.png")
 
 
-#' ### Gene Ontology enrichment
-#' ```{r go, echo=FALSE, eval=FALSE}
-#' Once you have obtained a list of candidate genes, you most probably want
-#' to annotate them.
-#' 
-#' In the following example, we first identify the background; _i.e._ the
-#' population of expressed genes. We select the genes expressed in a least
-#' 2 replicate of one condition at a cutoff of `exp`.
-#' 
-#' Next we run the enrichment, in the example against `athaliana` using 
-#' the gofer3 REST API (interfaced through the gopher.R script loaded at the
-#' beginning of this fil).
-#' 
-#' Finally we export the go enrichment as a complete table.
-#' We used to export another table consisting
-#' of only the `id` and `padj` columns for using as input for _e.g._
-#' REVIGO; but since flash is EOL and REVIGO not updated, we instead rely on 
-#' the RtoolBox treemap.
-#' 
-#' In addition we now also export the list of genes that most likely resulted in
-#' the corresponding go enrichment.
-#' 
-#' Make sure to change the `url` to match your species
-#' 
-#' ```
-background <- rownames(vst)[featureSelect(vst, dds$BioID, exp = CHANGEME)]
+#' Enrichment of the heatmap clusters
+Enr_phloem_clustersNW <-enrich_heatmap_clusters(nclust = 8, datasetname = "Norwood_Phloem", gene_mat = genelistscale.nwp, 
+                                               ann_ribbon = ribbonNW, ann_colour = ann_coloursNW, 
+                                               col_gaps = c(17,32), gopher_url = "pabies", background = bgNW)
 
-enr.list <- lapply(res.list, function(r){
-    lapply(r,gopher,background=background,task="go",url="athaliana")
-})
+Enr_xylem_clustersNW <-enrich_heatmap_clusters(nclust = 8, datasetname = "Norwood_Xylem", gene_mat = genelistscale.nwx, 
+                                               ann_ribbon = ribbonNW, ann_colour = ann_coloursNW, 
+                                               col_gaps = c(17,32), gopher_url = "pabies", background = bgNW)
 
-dev.null <- lapply(names(enr.list),function(n){
-    lapply(names(enr.list[[n]]),function(de){
-        extractEnrichmentResults(enr.list[[n]][[de]],
-                                 diff.exp=de,
-                                 genes=res.list[[n]][[de]],
-                                 default_prefix=paste(n,de,sep="-"),
-                                 url="athaliana")
-    })
-})
+
 
 #' # Session Info 
 #'  ```{r session info, echo=FALSE}

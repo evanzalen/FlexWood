@@ -312,7 +312,6 @@ Potra_blast2go <- read_tsv(PotraV2Annotation_file,
 
 #' ## Differential Expression
 dds <- DESeq(dds)
-
 #' * Dispersion estimation
 #' The dispersion estimation is adequate
 plotDispEsts(dds)
