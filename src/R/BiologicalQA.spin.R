@@ -209,7 +209,7 @@ ggplot(dat, aes(x = values, group = ind, col = Tissue)) +
 #'  # but it does not harm setting it correctly for the differential expression analyses that may follow.
 #'  ```
 dds <- DESeqDataSetFromTximport(
-  txi = txi,
+  txi=txi,
   colData = samples,
   design = ~ Flexure)
 
