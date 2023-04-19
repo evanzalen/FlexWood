@@ -1,0 +1,107 @@
+T1-01	Phloem
+T1-02	Phloem
+T1-03	Phloem
+T1-04	Cambium
+T1-05	Cambium
+T1-06	Cambium
+T1-07	Expanding xylem
+T1-08	Expanding xylem
+T1-09	Expanding xylem
+T1-10	Expanding xylem
+T1-11	Expanding xylem
+T1-12	Expanding xylem
+T1-13	Lignified xylem
+T1-14	Lignified xylem
+T1-15	Lignified xylem
+T1-16	Lignified xylem
+T1-17	Lignified xylem
+T1-18	Lignified xylem
+T1-19	Lignified xylem
+T1-20	Lignified xylem
+T1-21	Lignified xylem
+T1-22	Lignified xylem
+T1-23	Lignified xylem
+T1-24	Lignified xylem
+T1-25	Lignified xylem
+T2-01	Phloem
+T2-02	Phloem
+T2-03	Phloem
+T2-04	Cambium
+T2-05	Cambium
+T2-06	Cambium
+T2-07	Expanding xylem
+T2-08	Expanding xylem
+T2-09	Expanding xylem
+T2-10	Expanding xylem
+T2-11	Expanding xylem
+T2-12	Lignified xylem
+T2-13	Lignified xylem
+T2-14	Lignified xylem
+T2-15	Lignified xylem
+T2-16	Lignified xylem
+T2-17	Lignified xylem
+T2-18	Lignified xylem
+T2-19	Lignified xylem
+T2-20	Lignified xylem
+T2-21	Lignified xylem
+T2-22	Lignified xylem
+T2-23	Lignified xylem
+T2-24	Lignified xylem
+T2-25	Lignified xylem
+T2-26	Lignified xylem
+T3-01	Phloem
+T3-02	Phloem
+T3-03	Phloem
+T3-04	Phloem
+T3-05	Cambium
+T3-06	Cambium
+T3-07	Cambium
+T3-08	Cambium
+T3-09	Expanding xylem
+T3-10	Expanding xylem
+T3-11	Expanding xylem
+T3-12	Expanding xylem
+T3-13	Expanding xylem
+T3-14	Expanding xylem
+T3-15	Lignified xylem
+T3-16	Lignified xylem
+T3-17	Lignified xylem
+T3-18	Lignified xylem
+T3-19	Lignified xylem
+T3-20	Lignified xylem
+T3-21	Lignified xylem
+T3-22	Lignified xylem
+T3-23	Lignified xylem
+T3-24	Lignified xylem
+T3-25	Lignified xylem
+T3-26	Lignified xylem
+T3-27	Lignified xylem
+T3-28	Lignified xylem
+T4-01	Phloem
+T4-02	Phloem
+T4-03	Phloem
+T4-04	Cambium
+T4-05	Cambium
+T4-06	Cambium
+T4-07	Expanding xylem
+T4-08	Expanding xylem
+T4-09	Expanding xylem
+T4-10	Expanding xylem
+T4-11	Expanding xylem
+T4-12	Expanding xylem
+T4-13	Lignified xylem
+T4-14	Lignified xylem
+T4-15	Lignified xylem
+T4-16	Lignified xylem
+T4-17	Lignified xylem
+T4-18	Lignified xylem
+T4-19	Lignified xylem
+T4-20	Lignified xylem
+T4-21	Lignified xylem
+T4-22	Lignified xylem
+T4-23	Lignified xylem
+T4-24	Lignified xylem
+T4-25	Lignified xylem
+T4-26	Lignified xylem
+T4-27	Lignified xylem
+T4-28	Lignified xylem
