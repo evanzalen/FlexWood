@@ -1,4 +1,4 @@
-sampleID,Tissue,BioID,TW,Name
+sampleID,Tissue,Flexure,TW,Name
 X_STA1,Xylem,T89_STA,yes,X_S131
 X_STA2,Xylem,T89_STA,no,X_S235
 X_STA3,Xylem,T89_STA,yes,X_S339
