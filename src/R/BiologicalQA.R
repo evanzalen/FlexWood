@@ -213,7 +213,7 @@ dds <- DESeqDataSetFromTximport(
   colData = samples,
   design = ~ Flexure)
 
-save(dds, file = here("data/analysis/salmon/dds.rda"))
+save(dds, file = here("data/analysis/salmon/dds.rds"))
 
 #' ## size factors 
 #' (_i.e._ the sequencing library size effect)
